@@ -45,6 +45,10 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       setSelectedSeats([]);
       const response = await axios.get(`http://localhost:8000/api/seats/`);
       setSeats(response.data);
+
+      // Crear preferencia de pago en MercadoPago
+      const paymentResponse = await axios.post('http://localhost:8000/api/create-payment/');
+      window.location.href = paymentResponse.data.init_point;  // Redirigir a la página de pago
     } catch (error) {
       console.error('Error reserving seats:', error);
     }
