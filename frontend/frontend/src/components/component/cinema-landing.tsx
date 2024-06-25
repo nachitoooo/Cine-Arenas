@@ -100,18 +100,18 @@ const CinemaLanding = ({ movies }: CinemaLandingProps) => {
             <p className="text-lg text-gray-300 max-w-3xl mx-auto mt-4 text-center">
               Check out our current and upcoming movie lineup, with showtimes and ticket information.
             </p>
-            <div className="grid gap-6 mt-12 lg:grid-cols-3 lg:gap-12">
-              {movies.map((movie) => (
-                <div key={movie.id} className="flex flex-col items-center space-y-4">
-                  {movie.image && (
-                    <Image
-                      src={movie.image}
-                      width={200}
-                      height={300}
-                      alt={movie.title}
-                      className="rounded-xl shadow-lg"
-                    />
-                  )}
+              <div className="grid gap-6 mt-12 lg:grid-cols-3 lg:gap-12">
+                {movies.map((movie) => (
+                  <div key={movie.id} className="flex flex-col items-center space-y-4">
+                    {movie.image && (
+                      <Image
+                        src={movie.image}
+                        width={200}
+                        height={300}
+                        alt={movie.title}
+                        className="rounded-xl shadow-lg"
+                      />
+                    )}
                   <h3 className="text-xl font-bold">{movie.title}</h3>
                   <p className="text-gray-300">{movie.description}</p>
                   <p className="text-gray-400"><strong>Fecha de Estreno:</strong> {movie.release_date}</p>

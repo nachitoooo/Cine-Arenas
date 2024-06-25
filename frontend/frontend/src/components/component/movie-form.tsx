@@ -20,13 +20,14 @@ const MovieForm = ({ movieId }: MovieFormProps) => {
 
   useEffect(() => {
     if (movieId) {
-      // Fetch movie details if editing
       axios.get(`http://localhost:8000/api/movies/${movieId}/`).then((response) => {
         const { title, release_date, description, image } = response.data;
         setTitle(title);
         setReleaseDate(release_date);
         setDescription(description);
-        setImage(null); // Handle image preview separately if needed
+        setImage(null); 
+      }).catch((error) => {
+        console.error('Error fetching movie:', error);
       });
     }
   }, [movieId]);
