@@ -36,7 +36,8 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
         setTitle(title);
         setReleaseDate(release_date);
         setDescription(description);
-        setImage(null);
+        setImage(null); // Handle image preview separately if needed
+        
       }).catch((error) => {
         console.error('Error fetching movie:', error);
       });
@@ -80,7 +81,8 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
   };
 
   return (
-    <div className="mx-auto max-w-4xl py-10">
+    <div className="mx-auto max-w-4xl py-10 bg-white rounded-lg">
+
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold">{movieId ? 'Editar Película' : 'Crear Película'}</h1>
         <p className="text-muted-foreground">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a tu catálogo.</p>

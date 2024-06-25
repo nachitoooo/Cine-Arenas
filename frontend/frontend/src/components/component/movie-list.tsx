@@ -3,6 +3,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import MovieForm from './movie-form';
+
 interface Movie {
   id: number;
   title: string;
@@ -45,7 +46,20 @@ const MovieList = () => {
 
   const handleSaveEdit = async (updatedMovie: Movie) => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, updatedMovie);
+      const formData = new FormData();
+      formData.append('title', updatedMovie.title);
+      formData.append('release_date', updatedMovie.release_date);
+      formData.append('description', updatedMovie.description);
+      if (updatedMovie.image) {
+        formData.append('image', updatedMovie.image);
+      }
+  
+      const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
       setMovies(movies.map(movie => (movie.id === updatedMovie.id ? response.data : movie)));
       setEditingMovie(null);
     } catch (error) {
@@ -79,7 +93,7 @@ const MovieList = () => {
         ))}
       </div>
       {editingMovie && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg">
             <MovieForm
               movieId={editingMovie.id.toString()}
