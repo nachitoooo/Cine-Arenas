@@ -3,6 +3,7 @@ import Image from "next/image";
 import { FaFilm, FaCouch, FaVolumeUp } from 'react-icons/fa';
 import { FaFacebookF, FaTwitter, FaInstagram } from 'react-icons/fa';
 import { GiPopcorn } from "react-icons/gi";
+import 'tailwindcss/tailwind.css';
 
 interface Movie {
   id: number;

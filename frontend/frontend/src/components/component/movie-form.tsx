@@ -55,7 +55,7 @@ const MovieForm = ({ movieId }: MovieFormProps) => {
           },
         });
       }
-      router.push('/');
+      router.push('/edit-movie');
     } catch (error) {
       console.error('Error saving movie:', error);
     }
