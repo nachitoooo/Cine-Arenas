@@ -1,9 +1,7 @@
-// pages/index.tsx
 import { GetServerSideProps } from 'next';
 import axios from 'axios';
 import CinemaLanding from '@/components/component/cinema-landing';
-
-
+import 'tailwindcss/tailwind.css';
 interface Movie {
   id: number;
   title: string;

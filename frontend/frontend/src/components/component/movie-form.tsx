@@ -1,16 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-export default function CreateMovie() {
+interface MovieFormProps {
+  movieId?: string;
+}
+
+const MovieForm = ({ movieId }: MovieFormProps) => {
   const [title, setTitle] = useState<string>('');
   const [releaseDate, setReleaseDate] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (movieId) {
+      // Fetch movie details if editing
+      axios.get(`http://localhost:8000/api/movies/${movieId}/`).then((response) => {
+        const { title, release_date, description, image } = response.data;
+        setTitle(title);
+        setReleaseDate(release_date);
+        setDescription(description);
+        setImage(null); // Handle image preview separately if needed
+      });
+    }
+  }, [movieId]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,28 +41,37 @@ export default function CreateMovie() {
       formData.append('image', image);
     }
 
-    await axios.post('http://localhost:8000/api/movies/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+    try {
+      if (movieId) {
+        await axios.put(`http://localhost:8000/api/movies/${movieId}/`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } else {
+        await axios.post('http://localhost:8000/api/movies/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
       }
-    });
-    setTitle('');
-    setReleaseDate('');
-    setDescription('');
-    setImage(null);
+      router.push('/');
+    } catch (error) {
+      console.error('Error saving movie:', error);
+    }
   };
 
   return (
     <div className="mx-auto max-w-4xl py-10">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold">Crear Película</h1>
-        <p className="text-muted-foreground">Completa el formulario para agregar una nueva película a tu catálogo.</p>
+        <h1 className="text-4xl font-bold">{movieId ? 'Editar Película' : 'Crear Película'}</h1>
+        <p className="text-muted-foreground">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a tu catálogo.</p>
       </div>
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
             <CardTitle>Detalles de la Película</CardTitle>
-            <CardDescription>Ingresa la información para tu nueva película.</CardDescription>
+            <CardDescription>Ingresa la información para tu película.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -80,10 +108,12 @@ export default function CreateMovie() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button type="submit">Guardar Película</Button>
+            <Button type="submit">{movieId ? 'Guardar Cambios' : 'Guardar Película'}</Button>
           </CardFooter>
         </form>
       </Card>
     </div>
   );
-}
+};
+
+export default MovieForm;

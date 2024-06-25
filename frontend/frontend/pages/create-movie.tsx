@@ -6,7 +6,6 @@ import { PassThrough } from "stream";
 export default function Home() {
   return (
     <CreateMovie></CreateMovie>
-
      
   );
 }
