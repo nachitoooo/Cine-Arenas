@@ -9,28 +9,39 @@ import { Button } from "@/components/ui/button";
 
 interface MovieFormProps {
   movieId?: string;
+  initialData?: Movie;
+  onCancel?: () => void;
+  onSave?: (movie: Movie) => void;
 }
 
-const MovieForm = ({ movieId }: MovieFormProps) => {
-  const [title, setTitle] = useState<string>('');
-  const [releaseDate, setReleaseDate] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+interface Movie {
+  id: number;
+  title: string;
+  description: string;
+  release_date: string;
+  image: string | null;
+}
+
+const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) => {
+  const [title, setTitle] = useState<string>(initialData?.title || '');
+  const [releaseDate, setReleaseDate] = useState<string>(initialData?.release_date || '');
+  const [description, setDescription] = useState<string>(initialData?.description || '');
   const [image, setImage] = useState<File | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (movieId) {
+    if (movieId && !initialData) {
       axios.get(`http://localhost:8000/api/movies/${movieId}/`).then((response) => {
         const { title, release_date, description, image } = response.data;
         setTitle(title);
         setReleaseDate(release_date);
         setDescription(description);
-        setImage(null); 
+        setImage(null);
       }).catch((error) => {
         console.error('Error fetching movie:', error);
       });
     }
-  }, [movieId]);
+  }, [movieId, initialData]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,19 +54,25 @@ const MovieForm = ({ movieId }: MovieFormProps) => {
     }
 
     try {
+      let response;
       if (movieId) {
-        await axios.put(`http://localhost:8000/api/movies/${movieId}/`, formData, {
+        response = await axios.put(`http://localhost:8000/api/movies/${movieId}/`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
       } else {
-        await axios.post('http://localhost:8000/api/movies/', formData, {
+        response = await axios.post('http://localhost:8000/api/movies/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
       }
+
+      if (onSave) {
+        onSave(response.data);
+      }
+
       router.push('/edit-movie');
     } catch (error) {
       console.error('Error saving movie:', error);
@@ -108,7 +125,12 @@ const MovieForm = ({ movieId }: MovieFormProps) => {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex justify-end">
+          <CardFooter className="flex justify-end space-x-2">
+            {onCancel && (
+              <Button type="button" onClick={onCancel}>
+                Cancelar
+              </Button>
+            )}
             <Button type="submit">{movieId ? 'Guardar Cambios' : 'Guardar Película'}</Button>
           </CardFooter>
         </form>
