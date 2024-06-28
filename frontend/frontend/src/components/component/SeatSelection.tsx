@@ -45,6 +45,11 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         alert("No seats selected");
         return;
       }
+
+      if (!email) {
+        alert("Email is required");
+        return;
+      }
   
       const response = await axios.post('http://localhost:8000/api/reservations/', {
         movie: movieId,

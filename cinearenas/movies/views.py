@@ -45,7 +45,10 @@ class ReservationViewSet(viewsets.ModelViewSet):
         if not seats:
             raise ValidationError('No seats selected')
         
-        reservation = serializer.save()
+        # Asignar el usuario solo si está autenticado, de lo contrario dejarlo nulo
+        user = self.request.user if self.request.user.is_authenticated else None
+        reservation = serializer.save(user=user)
+        
         for seat_id in seats:
             seat = Seat.objects.get(id=seat_id)
             seat.is_reserved = True
@@ -93,9 +96,13 @@ def public_movie_list(request):
 
 #mercadopago
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create_payment(request):
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     
+    email = request.data.get('email')
+    if not email:
+        return Response({"error": "Email is required for payment"}, status=status.HTTP_400_BAD_REQUEST)
 
     preference_data = {
         "items": [
@@ -106,7 +113,7 @@ def create_payment(request):
             }
         ],
         "payer": {
-            "email": request.user.email,
+            "email": email,
         },
         "back_urls": {
             "success": "http://localhost:3000/payment-success",
