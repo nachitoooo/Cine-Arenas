@@ -18,13 +18,16 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/seats/`)
-      .then(response => {
+    const fetchSeats = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
         setSeats(response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching seats:', error);
-      });
+      }
+    };
+
+    fetchSeats();
   }, [movieId]);
 
   const handleSeatClick = (seatId: number) => {
@@ -37,43 +40,64 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
 
   const handleReserveSeats = async () => {
     try {
-      await axios.post('http://localhost:8000/api/reservations/', {
+      if (selectedSeats.length === 0) {
+        alert("No seats selected");
+        return;
+      }
+  
+      const response = await axios.post('http://localhost:8000/api/reservations/', {
         movie: movieId,
         seats: selectedSeats,
       });
+  
       alert('Seats reserved successfully');
-      setSelectedSeats([]);
-      const response = await axios.get(`http://localhost:8000/api/seats/`);
-      setSeats(response.data);
-
+  
       // Crear preferencia de pago en MercadoPago
-      const paymentResponse = await axios.post('http://localhost:8000/api/create-payment/');
+      const paymentResponse = await axios.post('http://localhost:8000/api/create-payment/', {
+        seats: selectedSeats,
+      });
+  
+      setSelectedSeats([]);
       window.location.href = paymentResponse.data.init_point;  // Redirigir a la página de pago
+  
+      // Actualizar asientos después de la reserva
+      const updatedSeats = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
+      setSeats(updatedSeats.data);
+  
     } catch (error) {
       console.error('Error reserving seats:', error);
+      alert('Error reserving seats. Please try again.');
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-center text-white">Select Seats</h1>
-      <div className="grid grid-cols-8 gap-2">
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Select Seats</h2>
+      <div className="grid grid-cols-10 gap-2 mb-4">
         {seats.map(seat => (
-          <button
+          <Button
             key={seat.id}
             onClick={() => handleSeatClick(seat.id)}
-            className={`p-2 border rounded ${seat.is_reserved ? 'bg-red-500' : selectedSeats.includes(seat.id) ? 'bg-green-500' : 'bg-gray-300'}`}
+            className={`p-2 text-sm ${
+              seat.is_reserved
+                ? 'bg-red-500 cursor-not-allowed'
+                : selectedSeats.includes(seat.id)
+                ? 'bg-green-500'
+                : 'bg-gray-300'
+            }`}
             disabled={seat.is_reserved}
           >
             {seat.row}{seat.number}
-          </button>
+          </Button>
         ))}
       </div>
-      <div className="text-center mt-8">
-        <Button onClick={handleReserveSeats} className="bg-blue-500 text-white rounded-lg px-4 py-2">
-          Reserve Selected Seats
-        </Button>
-      </div>
+      <Button
+        onClick={handleReserveSeats}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        disabled={selectedSeats.length === 0}
+      >
+        Reserve Selected Seats
+      </Button>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import 'tailwindcss/tailwind.css';
 import SeatSelection from '@/components/component/SeatSelection';
+
 const SelectSeats = () => {
   const router = useRouter();
   const { movieId } = router.query;

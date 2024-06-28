@@ -18,7 +18,6 @@ interface HomeProps {
 const Home = ({ movies }: HomeProps) => {
   return <CinemaLanding movies={movies} />;
 };
-
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/movies/');

@@ -30,8 +30,13 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
     if (movieId && !initialData) {
-      axios.get(`http://localhost:8000/api/movies/${movieId}/`).then((response) => {
+      axios.get(`http://localhost:8000/api/movies/${movieId}/`, {
+        headers: {
+          'Authorization': `Token ${token}`
+        }
+      }).then((response) => {
         const { title, release_date, description, image } = response.data;
         setTitle(title);
         setReleaseDate(release_date);
@@ -53,20 +58,21 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
       formData.append('image', image);
     }
 
+    const token = localStorage.getItem('authToken');
+
     try {
       let response;
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Token ${token}`
+        },
+      };
+
       if (movieId) {
-        response = await axios.put(`http://localhost:8000/api/movies/${movieId}/`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        response = await axios.put(`http://localhost:8000/api/movies/${movieId}/`, formData, config);
       } else {
-        response = await axios.post('http://localhost:8000/api/movies/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        response = await axios.post('http://localhost:8000/api/movies/', formData, config);
       }
 
       if (onSave) {
@@ -132,7 +138,6 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
               </Button>
             )}
             <Button type="submit">{movieId ? 'Guardar Cambios' : 'Guardar Película'}</Button>
-            
           </CardFooter>
         </form>
       </Card>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Link from 'next/link';
 import Image from 'next/image';
 import MovieForm from './movie-form';
 
@@ -17,19 +16,31 @@ const MovieList = () => {
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
-    // Fetch movies
-    axios.get('http://localhost:8000/api/movies/')
-      .then(response => {
-        setMovies(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching movies:', error);
-      });
+    fetchMovies();
   }, []);
 
-  const handleDelete = async (movieId: number) => {
+  const fetchMovies = async () => {
+    const token = localStorage.getItem('authToken');
     try {
-      await axios.delete(`http://localhost:8000/api/movies/${movieId}/`);
+      const response = await axios.get('http://localhost:8000/api/movies/', {
+        headers: {
+          'Authorization': `Token ${token}`
+        }
+      });
+      setMovies(response.data);
+    } catch (error) {
+      console.error('Error fetching movies:', error);
+    }
+  };
+
+  const handleDelete = async (movieId: number) => {
+    const token = localStorage.getItem('authToken');
+    try {
+      await axios.delete(`http://localhost:8000/api/movies/${movieId}/`, {
+        headers: {
+          'Authorization': `Token ${token}`
+        }
+      });
       setMovies(movies.filter(movie => movie.id !== movieId));
     } catch (error) {
       console.error('Error deleting movie:', error);
@@ -45,18 +56,20 @@ const MovieList = () => {
   };
 
   const handleSaveEdit = async (updatedMovie: Movie) => {
+    const token = localStorage.getItem('authToken');
     try {
       const formData = new FormData();
       formData.append('title', updatedMovie.title);
       formData.append('release_date', updatedMovie.release_date);
       formData.append('description', updatedMovie.description);
-      if (updatedMovie.image) {
+      if (updatedMovie.image instanceof File) {
         formData.append('image', updatedMovie.image);
       }
   
       const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Token ${token}`
         },
       });
   
@@ -76,8 +89,8 @@ const MovieList = () => {
             {movie.image && (
               <Image
                 src={movie.image}
-                width={400} // Proporciona un valor de ancho
-                height={600} // Proporciona un valor de alto
+                width={400}
+                height={600}
                 alt={movie.title}
                 className="w-full h-64 object-cover rounded-lg mb-4"
               />

@@ -19,7 +19,11 @@ class SeatSerializer(serializers.ModelSerializer):
         fields = ['id', 'row', 'number', 'is_reserved']
 
 class ReservationSerializer(serializers.ModelSerializer):
-    seats = SeatSerializer(many=True, read_only=True)
+    seats = serializers.PrimaryKeyRelatedField(queryset=Seat.objects.all(), many=True)
+    
     class Meta:
         model = Reservation
         fields = ['id', 'user', 'seats', 'movie', 'reservation_time']
+        extra_kwargs = {
+            'user': {'required': False},  # Hacer que el campo user no sea requerido
+        }
