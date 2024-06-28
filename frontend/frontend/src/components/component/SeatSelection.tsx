@@ -61,11 +61,11 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       // Crear preferencia de pago en MercadoPago
       const paymentResponse = await axios.post('http://localhost:8000/api/create-payment/', {
         seats: selectedSeats,
-        email: email,  // Asegúrate de enviar el email
+        email: email,
       });
   
       setSelectedSeats([]);
-      window.location.href = paymentResponse.data.init_point;  // Redirigir a la página de pago
+      window.location.href = paymentResponse.data.init_point;
   
       // Actualizar asientos después de la reserva
       const updatedSeats = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
@@ -97,10 +97,11 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
               seat.is_reserved
                 ? 'bg-red-500 cursor-not-allowed'
                 : selectedSeats.includes(seat.id)
-                ? 'bg-green-500'
-                : 'bg-gray-300'
+                ? 'bg-blue-800 transition-colors duration-300' // Añadida transición
+                : 'bg-green-500'
             }`}
             disabled={seat.is_reserved}
+            style={{ backgroundColor: selectedSeats.includes(seat.id) ? '#00a331' : undefined }}
           >
             {seat.row}{seat.number}
           </Button>
