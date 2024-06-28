@@ -16,6 +16,7 @@ interface SeatSelectionProps {
 const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const fetchSeats = async () => {
@@ -55,6 +56,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       // Crear preferencia de pago en MercadoPago
       const paymentResponse = await axios.post('http://localhost:8000/api/create-payment/', {
         seats: selectedSeats,
+        email: email,  // Asegúrate de enviar el email
       });
   
       setSelectedSeats([]);
@@ -73,6 +75,14 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Select Seats</h2>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+        className="mb-4 p-2 border"
+        required
+      />
       <div className="grid grid-cols-10 gap-2 mb-4">
         {seats.map(seat => (
           <Button

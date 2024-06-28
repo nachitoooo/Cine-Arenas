@@ -25,5 +25,5 @@ class ReservationSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = ['id', 'user', 'seats', 'movie', 'reservation_time']
         extra_kwargs = {
-            'user': {'required': False},  # Hacer que el campo user no sea requerido
+            'user': {'required': False},
         }

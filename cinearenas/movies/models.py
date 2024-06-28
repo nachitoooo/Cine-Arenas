@@ -20,7 +20,7 @@ class Seat(models.Model):
         return f"{self.row}{self.number}"
 
 class Reservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     seats = models.ManyToManyField(Seat)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     reservation_time = models.DateTimeField(auto_now_add=True)
