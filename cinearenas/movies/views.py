@@ -15,7 +15,7 @@ from django.http import JsonResponse
 import mercadopago
 from django.conf import settings
 from .models import Movie, Seat, Reservation
-from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer
+from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer 
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
