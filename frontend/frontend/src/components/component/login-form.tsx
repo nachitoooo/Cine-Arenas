@@ -1,8 +1,8 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import '../../app/login-form.css'; // Importación correcta del archivo CSS
 
 const LoginForm = () => {
     const [username, setUsername] = useState('');
@@ -23,65 +23,70 @@ const LoginForm = () => {
     }, []);
 
     const handleLogin = async (e: FormEvent) => {
-      e.preventDefault();
-      try {
-          const response = await axios.post('http://localhost:8000/api/login/', 
-              { username, password },
-              { 
-                  headers: { 
-                      'X-CSRFToken': csrfToken,
-                      'Content-Type': 'application/json'
-                  } 
-              }
-          );
-          console.log(response.data);
-          localStorage.setItem('authToken', response.data.token);
-          router.push('/admin');
-      } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-              console.error('Error logging in:', error.response?.data);
-          } else {
-              console.error('An unexpected error occurred:', error);
-          }
-      }
-  };
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8000/api/login/', 
+                { username, password },
+                { 
+                    headers: { 
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    } 
+                }
+            );
+            console.log(response.data);
+            localStorage.setItem('authToken', response.data.token);
+            router.push('/admin');
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                console.error('Error logging in:', error.response?.data);
+            } else {
+                console.error('An unexpected error occurred:', error);
+            }
+        }
+    };
 
     return (
-        <form onSubmit={handleLogin}>
-            <div className="mb-4">
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                    Username
-                </label>
-                <Input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username"
-                    required
-                    className="mt-1"
-                />
+        <div className="login-container">
+            <div className="card">
+                <div className="card-header">
+                    <h3 className="card-title">Ingresar</h3>
+                </div>
+                <div className="card-content">
+                    <form onSubmit={handleLogin} className="form">
+                        <div className="form-group">
+                            <label htmlFor="username" className="form-label">Usuario - Administrador</label>
+                            <input
+                                id="username"
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="form-input"
+                                placeholder="Usuario"
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="password" className="form-label">Contraseña</label>
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="form-input"
+                                placeholder="Contraseña"
+                                required
+                            />
+                        </div>
+                        
+                        <div className="form-footer">
+                            <button type="submit" className="form-button">Ingresar</button>
+                            
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div className="mb-4">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Password
-                </label>
-                <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    required
-                    className="mt-1"
-                />
-            </div>
-            <div className="flex items-center justify-between">
-                <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                    Login
-                </Button>
-            </div>
-        </form>
+        </div>
     );
 };
 
