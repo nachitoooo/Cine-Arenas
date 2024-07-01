@@ -3,10 +3,17 @@
 @tailwind utilities;
 
 
-body{
-  background-color: black;
-}
+
 .navbar-link {
   color: white !important;
+}
+
+
+.text-brand {
+  color: #ffd700; 
+}
+
+.bg-brand {
+  background-color: #ffd700; 
 }
 

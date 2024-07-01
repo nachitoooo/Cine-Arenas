@@ -68,7 +68,7 @@ const MovieSlider: React.FC<MovieSliderProps> = ({ movies }) => {
             )}
             <div className="mt-4 text-center">
               <Link href={`/select-seats/${movie.id}`} legacyBehavior>
-                <a className="bg-brand text-white px-6 py-3 rounded-sm" >Comprar entrada</a>
+                <a className="bg-brand text-white px-6 py-3 " style={{ borderRadius: '10px' }} >Comprar entrada</a>
               </Link>
             </div>
           </div>

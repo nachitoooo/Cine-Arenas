@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next';
 import axios from 'axios';
 import CinemaLanding from '@/components/component/cinema-landing';
-import 'tailwindcss/tailwind.css'
+import 'tailwindcss/tailwind.css';
 
 interface Movie {
   id: number;
@@ -18,6 +18,7 @@ interface HomeProps {
 const Home = ({ movies }: HomeProps) => {
   return <CinemaLanding movies={movies} />;
 };
+
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/movies/');

@@ -6,7 +6,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
-
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import logout
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -64,8 +65,7 @@ class MovieListCreate(generics.ListCreateAPIView):
 class MovieDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    permission_classes = [AllowAny]  # Permitir acceso sin autenticación
-
+    permission_classes = [AllowAny] 
 
 @ensure_csrf_cookie
 def get_csrf_token(request):
@@ -84,11 +84,15 @@ class CustomObtainAuthToken(ObtainAuthToken):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 def user_logout(request):
-    request.user.auth_token.delete()
-    logout(request)
-    return Response(status=204)
-
+    try:
+        request.user.auth_token.delete()
+        logout(request)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except AttributeError:
+        return Response({'error': 'El usuario no tiene un token de autenticación'}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -96,6 +100,7 @@ def public_movie_list(request):
     movies = Movie.objects.all()
     serializer = MovieSerializer(movies, many=True)
     return Response(serializer.data)
+
 
 #mercadopago
 @api_view(['POST'])
