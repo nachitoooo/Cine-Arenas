@@ -11,7 +11,11 @@ interface Movie {
   image: string | null;
 }
 
-const MovieList = () => {
+interface MovieListProps {
+  setIsEditing: (isEditing: boolean) => void;
+}
+
+const MovieList = ({ setIsEditing }: MovieListProps) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
 
@@ -49,10 +53,12 @@ const MovieList = () => {
 
   const handleEdit = (movie: Movie) => {
     setEditingMovie(movie);
+    setIsEditing(true);
   };
 
   const handleCancelEdit = () => {
     setEditingMovie(null);
+    setIsEditing(false);
   };
 
   const handleSaveEdit = async (updatedMovie: Movie) => {
@@ -65,16 +71,17 @@ const MovieList = () => {
       if (updatedMovie.image instanceof File) {
         formData.append('image', updatedMovie.image);
       }
-  
+
       const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Token ${token}`
         },
       });
-  
+
       setMovies(movies.map(movie => (movie.id === updatedMovie.id ? response.data : movie)));
       setEditingMovie(null);
+      setIsEditing(false);
     } catch (error) {
       console.error('Error updating movie:', error);
     }
@@ -106,7 +113,7 @@ const MovieList = () => {
         ))}
       </div>
       {editingMovie && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg">
             <MovieForm
               movieId={editingMovie.id.toString()}

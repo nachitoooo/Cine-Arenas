@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import '../../app/movie-form.css'; // Importación correcta del archivo CSS
 
 interface MovieFormProps {
   movieId?: string;
@@ -86,40 +87,35 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
   };
 
   return (
-    <div className="mx-auto max-w-4xl py-10 bg-white rounded-lg">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold">{movieId ? 'Editar Película' : 'Crear Película'}</h1>
-        <p className="text-muted-foreground">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a tu catálogo.</p>
-      </div>
-      <Card>
-        <form onSubmit={handleSubmit}>
-          <CardHeader>
-            <CardTitle>Detalles de la Película</CardTitle>
-            <CardDescription>Ingresa la información para tu película.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Título</Label>
-                <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ingresa el título de la película" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="releaseDate">Fecha de Estreno</Label>
-                <Input id="releaseDate" type="date" value={releaseDate} onChange={(e) => setReleaseDate(e.target.value)} placeholder="Selecciona la fecha de estreno" />
-              </div>
+    <div className="login-container">
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">{movieId ? 'Editar Película' : 'Crear Película'}</h3>
+          <p className="card-description">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a tu catálogo.</p>
+        </div>
+        <div className="card-content">
+          <form onSubmit={handleSubmit} className="form">
+            <div className="form-group">
+              <Label htmlFor="title" className="form-label">Título</Label>
+              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="form-input" placeholder="Ingresa el título de la película" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Descripción</Label>
+            <div className="form-group">
+              <Label htmlFor="releaseDate" className="form-label">Fecha de Estreno</Label>
+              <Input id="releaseDate" type="date" value={releaseDate} onChange={(e) => setReleaseDate(e.target.value)} className="form-input" placeholder="Selecciona la fecha de estreno" />
+            </div>
+            <div className="form-group">
+              <Label htmlFor="description" className="form-label">Descripción</Label>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                className="form-input"
                 placeholder="Proporciona una breve descripción de la película"
-                className="min-h-[120px]"
+                style={{ minHeight: '120px' }}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="image">Imagen</Label>
+            <div className="form-group">
+              <Label htmlFor="image" className="form-label">Imagen</Label>
               <Input 
                 id="image" 
                 type="file" 
@@ -128,19 +124,20 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
                     setImage(e.target.files[0]);
                   }
                 }} 
+                className="form-input"
               />
             </div>
-          </CardContent>
-          <CardFooter className="flex justify-end space-x-2">
-            {onCancel && (
-              <Button type="button" onClick={onCancel}>
-                Cancelar
-              </Button>
-            )}
-            <Button type="submit">{movieId ? 'Guardar Cambios' : 'Guardar Película'}</Button>
-          </CardFooter>
-        </form>
-      </Card>
+            <div className="form-footer">
+              {onCancel && (
+                <Button type="button" onClick={onCancel} className="form-button">
+                  Cancelar
+                </Button>
+              )}
+              <Button type="submit" className="form-button">{movieId ? 'Guardar Cambios' : 'Guardar Película'}</Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
