@@ -5,3 +5,7 @@ django-rest-authtoken==2.1.4
 djangorestframework==3.14.0
 gunicorn==21.2.0
 mercadopago==2.2.1
+qrcode==7.4.2
+pypng==0.20220715.0
+
+

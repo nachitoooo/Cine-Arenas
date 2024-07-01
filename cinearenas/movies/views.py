@@ -17,7 +17,9 @@ import mercadopago
 from django.conf import settings
 from .models import Movie, Seat, Reservation
 from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer 
-
+from django.shortcuts import render
+from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
@@ -109,14 +111,20 @@ def create_payment(request):
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     
     email = request.data.get('email')
-    if not email:
-        return Response({"error": "Email is required for payment"}, status=status.HTTP_400_BAD_REQUEST)
+    seats = request.data.get('seats', [])
+    if not email or not seats:
+        return Response({"error": "Email and seats are required for payment"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Obtener información de los asientos y la película
+    seat_objects = Seat.objects.filter(id__in=seats)
+    movie_id = seat_objects.first().movie_id if seat_objects.exists() else None
+    movie = Movie.objects.get(id=movie_id) if movie_id else None
 
     preference_data = {
         "items": [
             {
-                "title": "Movie Ticket",
-                "quantity": len(request.data.get('seats', [])),
+                "title": f"Movie Ticket for {movie.title}",
+                "quantity": len(seats),
                 "unit_price": 100.00
             }
         ],
@@ -124,14 +132,47 @@ def create_payment(request):
             "email": email,
         },
         "back_urls": {
-            "success": "http://localhost:3000/payment-success",
+            "success": f"http://localhost:3000/payment-success/{{preference_id}}",
             "failure": "http://localhost:3000/payment-failure",
             "pending": "http://localhost:3000/payment-pending"
         },
-        "auto_return": "approved"
+        "auto_return": "approved",
+        "metadata": {
+            "movie_title": movie.title,
+            "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
+            "total_amount": 100.00 * len(seats)
+        }
     }
 
     preference_response = sdk.preference().create(preference_data)
     preference = preference_response["response"]
 
+    # Guardar la preferencia en la base de datos (si es necesario)
+
     return Response(preference, status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@require_GET
+def payment_success(request):
+    preference_id = request.GET.get('preference_id')
+    
+    if not preference_id:
+        return JsonResponse({"error": "Preference ID is required"}, status=400)
+
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+    preference_response = sdk.preference().get(preference_id)
+    preference = preference_response["response"]
+
+    # Extraer los datos de la preferencia
+    movie_title = preference["metadata"]["movie_title"]
+    seats = preference["metadata"]["seats"]
+    total_amount = preference["metadata"]["total_amount"]
+
+    invoice_data = {
+        "movie_title": movie_title,
+        "seats": seats,
+        "total_amount": total_amount,
+    }
+
+    return JsonResponse(invoice_data)

@@ -45,7 +45,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         alert("No seats selected");
         return;
       }
-
+  
       if (!email) {
         alert("Email is required");
         return;
@@ -76,7 +76,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       alert('Error reserving seats. Please try again.');
     }
   };
-
+  
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Seleccionar asientos</h2>

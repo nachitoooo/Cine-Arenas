@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="invoice">
+        <h1>Payment Success</h1>
+        <h2>Movie: {{ movie_title }}</h2>
+        <h3>Seats:</h3>
+        <ul>
+            {% for seat in seats %}
+                <li>{{ seat.row }}{{ seat.number }}</li>
+            {% endfor %}
+        </ul>
+        <h3>Total Amount: ${{ total_amount }}</h3>
+    </div>
+</body>
+</html>
