@@ -84,11 +84,11 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
+        placeholder="Email"
         className="mb-4 p-2 border"
         required
       />
-      <div className="grid grid-cols-10 gap-2 mb-4">
+      <div className="grid grid-cols-10 gap-2 mb-4"  >
         {seats.map(seat => (
           <Button
             key={seat.id}
@@ -97,11 +97,11 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
               seat.is_reserved
                 ? 'bg-red-500 cursor-not-allowed'
                 : selectedSeats.includes(seat.id)
-                ? 'bg-blue-800 transition-colors duration-300' // Añadida transición
+                ? 'bg-blue-800 transition-colors duration-300' 
                 : 'bg-green-500'
             }`}
             disabled={seat.is_reserved}
-            style={{ backgroundColor: selectedSeats.includes(seat.id) ? '#00a331' : undefined }}
+            style={{ backgroundColor: selectedSeats.includes(seat.id) ? '#4657fa' : undefined }}
           >
             {seat.row}{seat.number}
           </Button>
