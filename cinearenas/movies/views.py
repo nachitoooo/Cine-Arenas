@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 
 from django.contrib.auth import logout
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -74,10 +74,13 @@ def get_csrf_token(request):
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'user_id': user.pk, 'email': user.email})
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key, 'user_id': user.pk, 'email': user.email})
+        except AuthenticationFailed:
+            return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

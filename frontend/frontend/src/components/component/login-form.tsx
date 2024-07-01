@@ -1,13 +1,13 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import '../../app/login-form.css'; // Importación correcta del archivo CSS
 
 const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [csrfToken, setCsrfToken] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -24,6 +24,7 @@ const LoginForm = () => {
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
+        setErrorMessage('');  // Clear previous error messages
         try {
             const response = await axios.post('http://localhost:8000/api/login/', 
                 { username, password },
@@ -39,9 +40,9 @@ const LoginForm = () => {
             router.push('/admin');
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
-                console.error('Error logging in:', error.response?.data);
+                setErrorMessage(error.response?.data?.error || 'Credenciales inválidas. Por favor, contacte a el administrador');
             } else {
-                console.error('An unexpected error occurred:', error);
+                setErrorMessage('Credenciales inválidas. Por favor, contacte a el administrador');
             }
         }
     };
@@ -53,6 +54,11 @@ const LoginForm = () => {
                     <h3 className="card-title">Ingresar</h3>
                 </div>
                 <div className="card-content">
+                    {errorMessage && (
+                        <div className="alert">
+                            {errorMessage}
+                        </div>
+                    )}
                     <form onSubmit={handleLogin} className="form">
                         <div className="form-group">
                             <label htmlFor="username" className="form-label">Usuario - Administrador</label>
@@ -81,7 +87,6 @@ const LoginForm = () => {
                         
                         <div className="form-footer">
                             <button type="submit" className="form-button">Ingresar</button>
-                            
                         </div>
                     </form>
                 </div>

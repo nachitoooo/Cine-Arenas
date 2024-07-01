@@ -1,7 +1,9 @@
 import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import '../../app/slider.css'; // Importación correcta del archivo CSS
+import '../../app/slider.css'; 
+import '../../app/globals.css'; 
+
 import Image from "next/image";
 import Link from "next/link";
 import 'tailwindcss/tailwind.css';
@@ -66,7 +68,7 @@ const MovieSlider: React.FC<MovieSliderProps> = ({ movies }) => {
             )}
             <div className="mt-4 text-center">
               <Link href={`/select-seats/${movie.id}`} legacyBehavior>
-                <a className="bg-brand text-black px-6 py-3 rounded-lg" >Comprar entrada</a>
+                <a className="bg-brand text-white px-6 py-3 rounded-sm" >Comprar entrada</a>
               </Link>
             </div>
           </div>
