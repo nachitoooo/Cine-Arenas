@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import 'tailwindcss/tailwind.css';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface Seat {
   row: string;
@@ -12,6 +13,7 @@ interface Invoice {
   movie_title: string;
   seats: Seat[];
   total_amount: number;
+  invoice_id: string; // Added invoice_id for QR code generation
 }
 
 const PaymentSuccess = () => {
@@ -32,6 +34,12 @@ const PaymentSuccess = () => {
   }, [preference_id]);
 
   if (!invoice) return <div>Cargando...</div>;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const qrValue = `Invoice ID: ${invoice.invoice_id}\nMovie: ${invoice.movie_title}\nTotal: $${invoice.total_amount}`;
 
   return (
     <div style={{ 
@@ -86,8 +94,23 @@ const PaymentSuccess = () => {
         <div style={{ textAlign: 'right', marginBottom: '20px' }}>
           <h3 style={{ fontSize: '1.5rem', color: '#2d3748' }}>TOTAL: ${invoice.total_amount}</h3>
         </div>
+        <div style={{ textAlign: 'center', marginBottom: '20px', display:'flex', justifyContent:'center' }}>
+          <QRCodeSVG value={qrValue} size={128} />
+        </div>
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <p style={{ fontStyle: 'italic', color: '#2d3748' }} >Gracias por su compra </p>
+          <button 
+            onClick={handlePrint} 
+            style={{ 
+              padding: '10px 20px', 
+              fontSize: '1rem', 
+              color: '#fff', 
+              backgroundColor: '#4A90E2', 
+              border: 'none', 
+              borderRadius: '5px', 
+              cursor: 'pointer' 
+            }}>
+            Imprimir Ticket
+          </button>
         </div>
         <div style={{ textAlign: 'center', borderTop: '2px solid #e2e8f0', paddingTop: '10px' }}>
           <p>Cine arenas - San Bernardo del Tuyú</p>
