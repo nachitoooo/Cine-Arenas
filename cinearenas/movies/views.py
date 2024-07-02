@@ -48,7 +48,6 @@ class ReservationViewSet(viewsets.ModelViewSet):
         if not seats:
             raise ValidationError('No seats selected')
         
-        # Asignar el usuario solo si está autenticado, de lo contrario dejarlo nulo
         user = self.request.user if self.request.user.is_authenticated else None
         reservation = serializer.save(user=user)
         

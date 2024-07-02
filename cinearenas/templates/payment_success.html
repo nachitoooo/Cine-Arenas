@@ -1,22 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Success</title>
+    <title>Éxito en el Pago</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a202c;
+            color: white;
+            margin: 0;
+        }
+        .invoice {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .invoice h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .invoice h2 {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+        .invoice h3 {
+            font-size: 1.25rem;
+            margin-top: 0.5rem;
+        }
+        .invoice ul {
+            list-style-type: disc;
+            padding-inline-start: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="invoice">
-        <h1>Payment Success</h1>
-        <h2>Movie: {{ movie_title }}</h2>
-        <h3>Seats:</h3>
+        <h1>Factura Electrónica</h1>
+        <h2>Película: {{ movie_title }}</h2>
+        <h3>Asientos:</h3>
         <ul>
             {% for seat in seats %}
                 <li>{{ seat.row }}{{ seat.number }}</li>
             {% endfor %}
         </ul>
-        <h3>Total Amount: ${{ total_amount }}</h3>
+        <h3>Monto Total: ${{ total_amount }}</h3>
     </div>
 </body>
 </html>

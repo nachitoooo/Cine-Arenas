@@ -1,4 +1,3 @@
-// pages/login.tsx
 
 import React from 'react';
 import LoginForm from '@/components/component/login-form';
