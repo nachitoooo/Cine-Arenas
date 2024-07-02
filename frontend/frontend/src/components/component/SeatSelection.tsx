@@ -1,3 +1,4 @@
+import { PiArmchairLight } from "react-icons/pi";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
@@ -55,10 +56,10 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         movie: movieId,
         seats: selectedSeats,
       });
+
+      alert('Asientos reservados correctamente');
   
-      alert('Seats reserved successfully');
-  
-      // Crear preferencia de pago en MercadoPago
+      // Después de reservar, petición a la API de MercadoPago para realizar el pago.  
       const paymentResponse = await axios.post('http://localhost:8000/api/create-payment/', {
         seats: selectedSeats,
         email: email,
@@ -67,7 +68,6 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       setSelectedSeats([]);
       window.location.href = paymentResponse.data.init_point;
   
-      // Actualizar asientos después de la reserva
       const updatedSeats = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
       setSeats(updatedSeats.data);
   
@@ -76,7 +76,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       alert('Error reserving seats. Please try again.');
     }
   };
-  
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Seleccionar asientos</h2>
@@ -88,12 +88,12 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         className="mb-4 p-2 border"
         required
       />
-      <div className="grid grid-cols-10 gap-2 mb-4"  >
+      <div className="grid grid-cols-10 gap-2 mb-4">
         {seats.map(seat => (
           <Button
             key={seat.id}
             onClick={() => handleSeatClick(seat.id)}
-            className={`p-2 text-sm ${
+            className={`p-2 text-sm flex items-center justify-center ${
               seat.is_reserved
                 ? 'bg-red-500 cursor-not-allowed'
                 : selectedSeats.includes(seat.id)
@@ -101,8 +101,9 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
                 : 'bg-green-500'
             }`}
             disabled={seat.is_reserved}
-            style={{ backgroundColor: selectedSeats.includes(seat.id) ? '#4657fa' : undefined }}
+            style={{ backgroundColor: selectedSeats.includes(seat.id) ? '#d1d1d1' : undefined , borderRadius:'5px' }}
           >
+            <PiArmchairLight className="mr-2" />
             {seat.row}{seat.number}
           </Button>
         ))}
@@ -112,7 +113,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         className="bg-blue-500 text-white px-4 py-2 rounded"
         disabled={selectedSeats.length === 0}
       >
-        Reserve Selected Seats
+        Reservar asientos seleccionados
       </Button>
     </div>
   );

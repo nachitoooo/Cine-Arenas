@@ -58,6 +58,7 @@ const AdminNavigation = () => {
         <Link href="/" className="text-white text-2xl font-bold"> Cine arenas - Panel de administrador</Link>
         <div className="flex space-x-4">
           <Link href="/create-movie" className="text-white hover:text-gray-400">Crear Película</Link>
+          <Link href="/edit-movie" className="text-white hover:text-gray-400">Editar / ver películas </Link>
           <Link href="/" className="text-white hover:text-gray-400">Volver al sitio</Link>
           <button onClick={handleLogout} className="text-white hover:text-gray-400">Cerrar Sesión</button>
         </div>

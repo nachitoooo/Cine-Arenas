@@ -60,7 +60,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
         <div className="relative z-10 flex items-center justify-start h-full">
           <div className="text-center px-4">
             <h1 className="lg:text-6xl text-3xl font-bold mt-2 "  style={{ color: 'white' }}>Knights of Wales</h1>
-            {/* <p className="text-lg mt-4 lg:max-w-3xl mx-auto">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quo laboriosam quae mollitia voluptatibus placeat.</p> */}
+            <p className="text-lg mt-4 lg:max-w-3xl mx-auto">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quo laboriosam quae mollitia voluptatibus placeat.</p>
             <Link href="#" className="mt-8 inline-flex items-center bg-brand text-white px-6 py-3 rounded-full text-white font-semibold text-lg">
               <FaPlay className="mr-2" /> Buy
             </Link>

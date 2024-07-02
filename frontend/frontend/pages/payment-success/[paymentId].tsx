@@ -4,6 +4,9 @@ import axios from 'axios';
 import 'tailwindcss/tailwind.css';
 import { QRCodeSVG } from 'qrcode.react';
 
+
+// estructura de datos de los asientos y de la factura (invoice)
+
 interface Seat {
   row: string;
   number: number;
@@ -13,8 +16,16 @@ interface Invoice {
   movie_title: string;
   seats: Seat[];
   total_amount: number;
-  invoice_id: string; // Added invoice_id for QR code generation
+  invoice_id: string; 
 }
+
+
+
+// ejecutar el useEffect cuando preference_id (obtenido del enrutador) cambia.
+// petición  a http://localhost:8000/api/payment-success/ con el preference_id.
+// al recibir la respuesta exitosa, actualiza el estado de nivoice con los datos recibidos.
+// depurar en caso de error
+
 
 const PaymentSuccess = () => {
   const router = useRouter();
@@ -33,7 +44,8 @@ const PaymentSuccess = () => {
     }
   }, [preference_id]);
 
-  if (!invoice) return <div>Cargando...</div>;
+  // ------------------ mientras se procesan los datos de la factura (invoice) mostrar un div de cargando ------------------
+  if (!invoice) return <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>Cargando factura...</div>; 
 
   const handlePrint = () => {
     window.print();
