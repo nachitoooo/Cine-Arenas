@@ -2,18 +2,27 @@
 @tailwind components; 
 @tailwind utilities;
 
-
-
-.navbar-link {
-  color: white !important;
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('../../fonts/netflixsans.otf') format('opentype');
 }
 
 
-.text-brand {
-  color: #ffd700; 
+.navbar-font{
+  color: white;
+  font-family: 'Netflix Sans', sans-serif;
+  
 }
 
-.bg-brand {
-  background-color: #ffd700; 
+.bg-white {
+  background-color: #ffffff;
+  border-radius: 5px;
 }
 
+.text-black {
+  color: #000000;
+}
+
+.hover\:bg-gray-200:hover {
+  background-color: #e5e7eb;
+}

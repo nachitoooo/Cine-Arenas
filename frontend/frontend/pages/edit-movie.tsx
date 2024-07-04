@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/component/protected-route";
 import { useState } from 'react';
 
 const EditMovie = () => {
-  const [isEditing, setIsEditing] = useState(false);
+ const [isEditing, setIsEditing] = useState(false);
 
   return (
     <ProtectedRoute>

@@ -31,18 +31,13 @@
     background: rgb(68, 68, 68) !important;
   }
   
-  .bg-brand {
-    background-color: rgb(255, 255, 0);
 
-  }
   
   a.bg-brand {
     transition: background-color 0.3s;
   }
   
-  a.bg-brand:hover {
-    background-color: #efc002;
-  }
+ 
   
 
   .buy-tickets-btn{
