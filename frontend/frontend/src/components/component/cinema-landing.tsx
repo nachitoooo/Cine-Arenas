@@ -49,9 +49,9 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
 }}></div>
         </div>
 
-        <nav className="relative z-10 p-4 lg:px-16 flex items-center justify-between bg-gradient-to-b from-black to-transparent">
+        <nav className="relative z-10 p-4 lg:px-16 flex items-center justify-start bg-gradient-to-b from-black to-transparent">
           <Link href="#">
-            <img src="img/logo.jpg" style={{ filter: 'invert(1)', marginLeft: '1rem' }} alt="Cinema La Plata Logo" className="w-32" />
+            <img src="img/logo.jpg" style={{ filter: 'invert(1)', marginLeft: '1rem' }} alt="Cine Arenas" className="w-32" />
           </Link>
           <button data-menu-toggle className="lg:hidden block pr-1">
             <FaBars className="fill-current text-white w-6 h-6" />
@@ -61,14 +61,14 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
             <li><Link href="#" className="text-white hover:text-gray-300">Cartelera</Link></li>
             <li><Link href="#" className="text-white hover:text-gray-300">Próximos estrenos</Link></li>
             <li><Link href="#" className="text-white hover:text-gray-300">Nosotros</Link></li>
-            <li><Link href="#" className="text-white hover:text-gray-300">Contacto</Link></li>
+{/*             <li><Link href="#" className="text-white hover:text-gray-300">Contacto</Link></li> */}
           </ul>
         </nav>
 
         <div className="relative z-10 flex items-center justify-start h-full">
           <div className="text-center px-4 mt-24 lg:mt-32 mb-28">
             <img src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Inside_Out_2_logo.svg" alt="Inside Out 2 Logo" className="max-w-xl mx-auto" style={{ filter: 'invert(1)', maxWidth: '22rem', marginLeft: '3rem' }} />
-            <div className="mt-4 inline-flex items-center space-x-4">
+            <div className="mt-4 mb-14 inline-flex items-center space-x-4">
               <Link href="#" className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-200 transition duration-300">
                 <FaPlay className="mr-2" /> Reservar 
               </Link>

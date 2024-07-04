@@ -58,17 +58,17 @@ const MovieSlider: React.FC<MovieSliderProps> = ({ movies }) => {
                 src={movie.image}
                 alt={movie.title}
                 width={300}
-                height={450}
+                height={150}
                 className="slider-image"
               />
             ) : (
-              <div className="bg-gray-800 w-full h-72 flex items-center justify-center">
+              <div className="bg-gray-800 w-full h-150px flex items-center justify-center">
                 <p>No Image Available</p>
               </div>
             )}
             <div className="mt-4 text-center">
               <Link href={`/select-seats/${movie.id}`} legacyBehavior>
-                <a className="bg-brand text-white px-6 py-3 " style={{ borderRadius: '10px' }} >Comprar entrada</a>
+                <a className="bg-brand text-white px-6 py-3 " style={{ borderRadius: '10px' }}>Comprar entrada</a>
               </Link>
             </div>
           </div>
