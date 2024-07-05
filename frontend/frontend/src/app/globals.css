@@ -1,16 +1,15 @@
-@tailwind base; 
-@tailwind components; 
+@tailwind base;
+@tailwind components;
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Netflix Sans';
-  src: url('../../fonts/netflixsans.otf') format('opentype');
+  font-family: "Netflix Sans";
+  src: url("../../fonts/netflixsans.otf") format("opentype");
 }
 
-.navbar-font{
+.navbar-font {
   color: white;
-  font-family: 'Netflix Sans', sans-serif;
-  
+  font-family: "Netflix Sans", sans-serif;
 }
 
 .bg-white {

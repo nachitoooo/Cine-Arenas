@@ -1,12 +1,12 @@
 import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import '../../app/slider.css'; 
-import '../../app/globals.css'; 
+import "../../app/slider.css";
+import "../../app/globals.css";
 
 import Image from "next/image";
 import Link from "next/link";
-import 'tailwindcss/tailwind.css';
+import "tailwindcss/tailwind.css";
 
 const responsive = {
   desktop: {
@@ -40,40 +40,26 @@ interface MovieSliderProps {
 
 const MovieSlider: React.FC<MovieSliderProps> = ({ movies }) => {
   return (
-    <div className="parent">
-      <Carousel
-        responsive={responsive}
-        autoPlay={true}
-        swipeable={true}
-        draggable={true}
-        showDots={true}
-        infinite={true}
-        partialVisible={false}
-        dotListClass="custom-dot-list-style"
-      >
-        {movies.map((movie) => (
-          <div className="slider" key={movie.id}>
+    <div className="parent flex flex-wrap justify-center gap-4">
+      {movies.map((movie) => (
+        <div className="slider" key={movie.id}>
+          <div className="relative cursor-pointer max-w-sm bg-white border border-black rounded-lg  dark:bg-gray-800 dark:border-black w-64 h-80 transition duration-300 ease-in-out transform hover:scale-105">
             {movie.image ? (
-              <Image
-                src={movie.image}
-                alt={movie.title}
-                width={300}
-                height={150}
-                className="slider-image"
-              />
+              <a href={`/select-seats/${movie.id}`}>
+                <img
+                  className="rounded-t-lg w-full h-full object-cover"
+                  src={movie.image}
+                  alt={movie.title}
+                />
+              </a>
             ) : (
-              <div className="bg-gray-800 w-full h-150px flex items-center justify-center">
-                <p>No Image Available</p>
+              <div className="bg-gray-800 w-full h-64 flex items-center justify-center rounded-t-lg">
+                <p className="text-white">Imagen no disponible</p>
               </div>
             )}
-            <div className="mt-4 text-center">
-              <Link href={`/select-seats/${movie.id}`} legacyBehavior>
-                <a className="bg-brand text-white px-6 py-3 " style={{ borderRadius: '10px' }}>Comprar entrada</a>
-              </Link>
-            </div>
           </div>
-        ))}
-      </Carousel>
+        </div>
+      ))}
     </div>
   );
 };
