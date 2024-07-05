@@ -23,7 +23,7 @@ interface Invoice {
 
 // ejecutar el useEffect cuando preference_id (obtenido del enrutador) cambia.
 // petición  a http://localhost:8000/api/payment-success/ con el preference_id.
-// al recibir la respuesta exitosa, actualiza el estado de nivoice con los datos recibidos.
+// al recibir la respuesta exitosa, actualiza el estado de invoice con los datos recibidos.
 // depurar en caso de error
 
 

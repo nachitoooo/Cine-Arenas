@@ -11,9 +11,13 @@ interface Seat {
   is_reserved: boolean;
 }
 
-// Definición de la interfaz para la película
+interface Invoice {
+  total_amount: number;
+}
+
 interface Movie {
   image: string | null;
+  title: string;
   description: string;
 }
 
@@ -28,6 +32,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const [email, setEmail] = useState("");
   const [movie, setMovie] = useState<Movie | null>(null);
+  const [subtotal, setSubtotal] = useState<number>(0);
 
   // Efecto para cargar los asientos disponibles al inicio y cuando cambia movieId
   useEffect(() => {
@@ -56,6 +61,12 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
     fetchSeats();
     fetchMovie();
   }, [movieId]);
+
+  // Efecto para calcular el subtotal cada vez que cambian los asientos seleccionados
+  useEffect(() => {
+    const seatPrice = 100; // Precio por asiento
+    setSubtotal(selectedSeats.length * seatPrice);
+  }, [selectedSeats]);
 
   const handleSeatClick = (seatId: number) => {
     setSelectedSeats((prevSelected) =>
@@ -109,13 +120,12 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   };
 
   return (
-    
     <div className="p-4 flex gap-4 items-start h-[100vh]">
       <div className="w-1/4">
         {movie && (
           <>
             <img
-              src={movie.image || "https://via.placeholder.com/150"}
+              src={movie.image || "https://st4.depositphotos.com/14953852/24787/v/380/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"}
               alt="Imagen de la película"
               className="w-96 h-100 rounded-lg shadow-lg"
             />
@@ -124,10 +134,9 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         )}
       </div>
 
-      {/* Formulario de selección de asientos */}
       <div className="flex-1">
         <h2 className="text-2xl font-bold mb-4">
-          Seleccionar asientos - Valor de la entrada 100$
+          Seleccionar asientos para - {movie?.title}
         </h2>
         <input
           type="email"
@@ -164,7 +173,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           ))}
         </div>
         <div className="flex justify-end">
-          <div className="text-2xl mr-12">Sub total: $15.000</div>
+          <div className="text-2xl mr-12">Sub total: ${subtotal}</div>
           <Button
             onClick={handleReserveSeats}
             className="bg-blue-500 text-white px-4 py-2 rounded"
