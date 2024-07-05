@@ -2,6 +2,7 @@ import { PiArmchairLight } from "react-icons/pi";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import SweetAlert2 from 'react-sweetalert2';
 
 // Definición de la interfaz para los asientos
 interface Seat {
@@ -21,7 +22,6 @@ interface Movie {
   description: string;
 }
 
-// Props esperadas por el componente SeatSelection
 interface SeatSelectionProps {
   movieId: string;
 }
@@ -64,7 +64,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
 
   // Efecto para calcular el subtotal cada vez que cambian los asientos seleccionados
   useEffect(() => {
-    const seatPrice = 100; // Precio por asiento
+    const seatPrice = 100 ;/*  #precio por asiento (a definir por el cliente) */
     setSubtotal(selectedSeats.length * seatPrice);
   }, [selectedSeats]);
 
@@ -79,6 +79,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   const handleReserveSeats = async () => {
     try {
       if (selectedSeats.length === 0) {
+        
         alert("No seats selected");
         return;
       }
@@ -95,8 +96,14 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           seats: selectedSeats,
         }
       );
+      const Swal = require('sweetalert2')
 
-      alert("Asientos reservados correctamente");
+      Swal.fire({
+        title: 'Confirmado!',
+        text: 'Asientos reservados correctamente',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
 
       const paymentResponse = await axios.post(
         "http://localhost:8000/api/create-payment/",
