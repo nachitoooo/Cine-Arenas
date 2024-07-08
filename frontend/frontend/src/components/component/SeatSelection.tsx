@@ -2,7 +2,6 @@ import { PiArmchairLight } from "react-icons/pi";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import SweetAlert2 from 'react-sweetalert2';
 
 // Definición de la interfaz para los asientos
 interface Seat {
@@ -135,7 +134,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
               src={movie.image || "https://st4.depositphotos.com/14953852/24787/v/380/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"}
               alt="Imagen de la película"
               className="w-96 h-100 rounded-lg shadow-lg"
-            />
+            />  
             <p className="mt-2 text-md text-white-700">{movie.description}</p>
           </>
         )}
@@ -150,7 +149,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Ingrese su Email"
-          className="mb-4 p-2 border rounded-lg w-100"
+          className="mb-4 p-2 border rounded-lg w-100 text-black"
           required
         />
         <div className="grid grid-cols-10 gap-2 mb-4">

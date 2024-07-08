@@ -6,6 +6,10 @@
   font-family: "Netflix Sans";
   src: url("../../fonts/netflixsans.otf") format("opentype");
 }
+.font{
+  font-family: "Netflix Sans", sans-serif;
+
+}
 
 .navbar-font {
   color: white;

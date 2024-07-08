@@ -132,10 +132,10 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
 
       <section className="container mx-auto mt-12 lg:px-16 px-4">
         <h2
-          className="mt-12 text-4xl ml-28 font-semibold mb-4 text-left"
+          className="mt-12 text-4xl ml-28 font-semibold mb-4 text-center font"
           style={{ color: "white" }}
         >
-          Cartelera
+          Cartelera y próximos estrenos
         </h2>
         <MovieSlider movies={movies} />
       </section>
