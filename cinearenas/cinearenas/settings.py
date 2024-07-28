@@ -165,4 +165,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MERCADOPAGO_ACCESS_TOKEN = 'TEST-6047770759203394-032617-e1238f7731dbce07c21cac9fb954662d-716882574'
+
+MERCADOPAGO_ACCESS_TOKEN = 'TEST-8741947583291739-072122-b02e1fa984fdd25c0b43bdfa04f9d9cf-716882574'

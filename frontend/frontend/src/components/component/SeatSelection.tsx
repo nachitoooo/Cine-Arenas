@@ -148,7 +148,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Ingrese su Email"
+          placeholder="Ingrese su email"
           className="mb-4 p-2 border rounded-lg w-100 text-black"
           required
         />
@@ -179,7 +179,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           ))}
         </div>
         <div className="flex justify-end">
-          <div className="text-2xl mr-12">Sub total: ${subtotal}</div>
+          <div className="text-2xl mr-12">Subtotal: ${subtotal}</div>
           <Button
             onClick={handleReserveSeats}
             className="bg-blue-500 text-white px-4 py-2 rounded"

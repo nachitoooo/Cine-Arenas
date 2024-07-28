@@ -53,14 +53,15 @@ const AdminNavigation = () => {
   };
 
   return (
-    <nav className="bg-gray-800 shadow-lg p-4">
+    <nav className="bg-[#111827] shadow-lg p-4 rounded-sm">
       <div className="container mx-auto flex justify-between">
         <Link href="/" className="text-white text-2xl font-bold"> Cine arenas - Panel de administrador</Link>
         <div className="flex space-x-4">
-          <Link href="/create-movie" className="text-white hover:text-gray-400">Crear Película</Link>
-          <Link href="/edit-movie" className="text-white hover:text-gray-400">Editar / ver películas </Link>
-          <Link href="/" className="text-white hover:text-gray-400">Volver al sitio</Link>
-          <button onClick={handleLogout} className="text-white hover:text-gray-400">Cerrar Sesión</button>
+        <Link href="/" className="text-white hover:text-gray-400">Inicio</Link>
+          <Link href="/create-movie" className="text-white hover:text-gray-400">Crear película</Link>
+
+          <Link href="/edit-movie" className="text-white hover:text-gray-400">Gestionar películas </Link>
+          <button onClick={handleLogout} className="text-white hover:text-gray-400 mb-[6.5px]">Cerrar Sesión</button>
         </div>
       </div>
     </nav>

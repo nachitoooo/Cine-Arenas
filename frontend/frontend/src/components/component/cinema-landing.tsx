@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { FaInfoCircle, FaShoppingCart, FaBars, FaPlay } from "react-icons/fa";
-import MovieSlider from "./slider";
+import { FaInfoCircle, FaBars, FaPlay } from "react-icons/fa";
+import { MovieCard } from "./MovieCard"; // Asegúrate de importar el componente MovieCard
+import CinemaCarousel from "./cinema-carousel";
 import "tailwindcss/tailwind.css";
 
 interface Movie {
@@ -40,27 +41,21 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
     <div className="antialiased bg-gray-900 text-white">
       <header className="relative w-full h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <video
-            src="img/video.mp4"
-            autoPlay
-            muted
-            loop
-            className="object-cover w-full h-full"
-          ></video>
+          <CinemaCarousel movies={movies} />
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 z-10"
             style={{
               background: `
-    linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 50%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.6), transparent 50%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.6), transparent 50%),
-    linear-gradient(270deg, rgba(0, 0, 0, 0.6), transparent 50%)
-  `,
+                linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 50%),
+                linear-gradient(0deg, rgba(0, 0, 0, 0.6), transparent 50%),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.6), transparent 50%),
+                linear-gradient(270deg, rgba(0, 0, 0, 0.6), transparent 50%)
+              `,
             }}
           ></div>
         </div>
 
-        <nav className="relative z-10 p-4 lg:px-16 flex items-center justify-between bg-gradient-to-b from-black to-transparent">
+        <nav className="relative z-20 p-4 lg:px-16 flex items-center justify-between bg-gradient-to-b from-black to-transparent">
           <Link href="#">
             <img
               src="img/logo.jpg"
@@ -73,7 +68,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
             <FaBars className="fill-current text-white w-6 h-6" />
           </button>
           <ul
-            className=" lg:flex flex-grow items-center justify-center space-x-24 text-lg font-medium navbar-font"
+            className="lg:flex flex-grow items-center justify-center space-x-24 text-lg font-medium navbar-font hidden"
             data-menu
           >
             <li>
@@ -99,56 +94,39 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
             {/* <li><Link href="#" className="text-white hover:text-gray-300">Contacto</Link></li> */}
           </ul>
         </nav>
-
-        <div className="relative z-10 flex items-center justify-start h-full">
-          <div className="text-center px-4 mt-24 ml-24 lg:mt-32 mb-28">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Inside_Out_2_logo.svg"
-              alt="Inside Out 2 Logo"
-              className="max-w-xl mx-auto"
-              style={{
-                filter: "invert(1)",
-                maxWidth: "22rem",
-                marginLeft: "3rem",
-              }}
-            />
-            <div className="ml-12 mt-14 mb-14 inline-flex items-center space-x-4">
-              <Link
-                href="#"
-                className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-200 transition duration-300"
-              >
-                <FaPlay className="mr-2" /> Reservar
-              </Link>
-              <Link
-                href="#"
-                className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-200 transition duration-300"
-              >
-                <FaInfoCircle className="mr-2" /> Más información
-              </Link>
-            </div>
-          </div>
-        </div>
       </header>
 
       <section className="container mx-auto mt-12 lg:px-16 px-4">
         <h2
-          className="mt-12 text-4xl ml-28 font-semibold mb-4 text-center font"
+          className="mt-12 text-4xl font-semibold mb-4 text-center"
           style={{ color: "white" }}
         >
-          Cartelera y próximos estrenos
+          Cartelera - Próximos estrenos
         </h2>
-        <MovieSlider movies={movies} />
+
+        {/* Renderizar imágenes de la cartelera */}
+        <div className="flex flex-wrap justify-center gap-4">
+          {movies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              id={movie.id}
+              image={movie.image}
+              title={movie.title}
+              description={movie.description}
+            />
+          ))}
+        </div>
       </section>
 
-      <footer className=" rounded-lg shadow dark:bg-gray-900">
+      <footer className="rounded-lg shadow dark:bg-gray-900">
         <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
           <div className="sm:flex sm:items-center sm:justify-between">
             <a
-              href="https://flowbite.com/"
+              href="/"
               className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
             >
               <img
-                src="https://flowbite.com/docs/images/logo.svg"
+                src="img/logo.jpg"
                 className="h-8"
                 alt="Flowbite Logo"
               />

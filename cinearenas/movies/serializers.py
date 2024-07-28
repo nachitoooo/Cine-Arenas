@@ -6,7 +6,7 @@ class MovieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'description', 'release_date', 'image', 'image_url']
+        fields = ['id', 'title', 'description', 'release_date', 'image', 'image_url' , 'cinema_listing']
 
     def get_image_url(self, obj):
         if obj.image:

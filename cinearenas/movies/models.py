@@ -6,6 +6,7 @@ class Movie(models.Model):
     description = models.TextField()
     release_date = models.DateField()
     image = models.ImageField(upload_to='movies/', null=True, blank=True)
+    cinema_listing = models.ImageField(upload_to='movies/cinema_listing/', null=False, blank=False)
 
     def __str__(self):
         return self.title
