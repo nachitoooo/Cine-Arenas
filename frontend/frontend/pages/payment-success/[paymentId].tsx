@@ -1,11 +1,9 @@
+// paymentId.tsx
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import 'tailwindcss/tailwind.css';
 import { QRCodeSVG } from 'qrcode.react';
-
-
-// estructura de datos de los asientos y de la factura (invoice)
 
 interface Seat {
   row: string;
@@ -16,16 +14,11 @@ interface Invoice {
   movie_title: string;
   seats: Seat[];
   total_amount: number;
-  invoice_id: string; 
+  invoice_id: string;
+  hall_name: string;
+  format: string;
+  showtime: string;
 }
-
-
-
-// ejecutar el useEffect cuando preference_id (obtenido del enrutador) cambia.
-// petición  a http://localhost:8000/api/payment-success/ con el preference_id.
-// al recibir la respuesta exitosa, actualiza el estado de invoice con los datos recibidos.
-// depurar en caso de error
-
 
 const PaymentSuccess = () => {
   const router = useRouter();
@@ -44,8 +37,7 @@ const PaymentSuccess = () => {
     }
   }, [preference_id]);
 
-  // ------------------ mientras se procesan los datos de la factura (invoice) mostrar un div de cargando ------------------
-  if (!invoice) return <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>Cargando factura...</div>; 
+  if (!invoice) return <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>Cargando factura...</div>;
 
   const handlePrint = () => {
     window.print();
@@ -76,6 +68,9 @@ const PaymentSuccess = () => {
         
         <div style={{ marginBottom: '20px' }}>
           <h3 style={{ fontSize: '1.5rem', color: '#2d3748' }}>Película: {invoice.movie_title}</h3>
+          <h4 style={{ fontSize: '1.2rem', color: '#2d3748' }}>Sala: {invoice.hall_name}</h4>
+          <h4 style={{ fontSize: '1.2rem', color: '#2d3748' }}>Formato: {invoice.format}</h4>
+          <h4 style={{ fontSize: '1.2rem', color: '#2d3748' }}>Horario: {new Date(invoice.showtime).toLocaleString()}</h4>
           <h4 style={{ fontSize: '1.2rem', color: '#2d3748' }}>Número de asiento:</h4>
           <ul style={{ listStyleType: 'disc', paddingInlineStart: '20px', color: '#2d3748' }}>
             {invoice.seats.map((seat, index) => (

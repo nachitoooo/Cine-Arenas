@@ -121,7 +121,6 @@ def public_movie_list(request):
     serializer = MovieSerializer(movies, many=True)  # Serializar todas las películas
     return Response(serializer.data)
 
-# Vista para crear un pago utilizando la API de MercadoPago
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_payment(request):
@@ -136,6 +135,9 @@ def create_payment(request):
     seat_objects = Seat.objects.filter(id__in=seats)
     movie_id = seat_objects.first().movie_id if seat_objects.exists() else None
     movie = Movie.objects.get(id=movie_id) if movie_id else None
+
+    # Obtener el primer horario de la película
+    showtime = Showtime.objects.filter(movie=movie).first()
 
     # Crear preferencia de pago con los detalles de la compra
     preference_data = {
@@ -158,7 +160,10 @@ def create_payment(request):
         "metadata": {
             "movie_title": movie.title,
             "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
-            "total_amount": 100.00 * len(seats)
+            "total_amount": 100.00 * len(seats),
+            "hall_name": movie.hall_name,
+            "format": movie.format,
+            "showtime": showtime.showtime.strftime('%Y-%m-%dT%H:%M:%S') if showtime else ""
         }
     }
 
@@ -168,7 +173,6 @@ def create_payment(request):
     # Devolver la preferencia creada en la respuesta
     return Response(preference, status=status.HTTP_201_CREATED)
 
-# Vista para manejar el éxito del pago y devolver los datos de la factura
 @csrf_exempt
 @require_GET
 def payment_success(request):
@@ -185,12 +189,18 @@ def payment_success(request):
     movie_title = preference["metadata"]["movie_title"]
     seats = preference["metadata"]["seats"]
     total_amount = preference["metadata"]["total_amount"]
+    hall_name = preference["metadata"]["hall_name"]
+    format = preference["metadata"]["format"]
+    showtime = preference["metadata"]["showtime"]
 
     # Crear datos de la factura
     invoice_data = {
         "movie_title": movie_title,
         "seats": seats,
         "total_amount": total_amount,
+        "hall_name": hall_name,
+        "format": format,
+        "showtime": showtime
     }
 
     # Devolver los datos de la factura en una respuesta JSON
