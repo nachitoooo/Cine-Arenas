@@ -16,8 +16,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 import mercadopago
 from django.conf import settings
-from .models import Movie, Seat, Reservation
-from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer 
+from .models import Movie, Seat, Reservation, Showtime
+from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer, ShowtimeSerializer
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
@@ -27,6 +27,11 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()  # Consulta para obtener todas las películas
     serializer_class = MovieSerializer  # Serializador para el modelo Movie
     permission_classes = [IsAuthenticated]  # Requiere autenticación para acceder a estas vistas
+
+class ShowtimeViewSet(viewsets.ModelViewSet):
+    queryset = Showtime.objects.all()
+    serializer_class = ShowtimeSerializer
+    permission_classes = [IsAuthenticated]
 
 # ViewSet para manejar las operaciones CRUD en el modelo Seat
 class SeatViewSet(viewsets.ModelViewSet):

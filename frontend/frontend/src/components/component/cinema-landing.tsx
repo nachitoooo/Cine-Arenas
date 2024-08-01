@@ -1,9 +1,15 @@
+// cinema-landing.tsx
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { FaInfoCircle, FaBars, FaPlay } from "react-icons/fa";
+import { FaBars } from "react-icons/fa";
 import { MovieCard } from "./MovieCard"; // Asegúrate de importar el componente MovieCard
 import CinemaCarousel from "./cinema-carousel";
 import "tailwindcss/tailwind.css";
+
+interface Showtime {
+  id: number;
+  showtime: string;
+}
 
 interface Movie {
   id: number;
@@ -11,6 +17,9 @@ interface Movie {
   description: string;
   release_date: string;
   image: string | null;
+  hall_name: string;
+  format: string;
+  showtimes: Showtime[];
 }
 
 interface CinemaLandingProps {
@@ -91,7 +100,6 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
                 Nosotros
               </Link>
             </li>
-            {/* <li><Link href="#" className="text-white hover:text-gray-300">Contacto</Link></li> */}
           </ul>
         </nav>
       </header>
@@ -113,6 +121,9 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
               image={movie.image}
               title={movie.title}
               description={movie.description}
+              hallName={movie.hall_name}
+              format={movie.format}
+              showtimes={movie.showtimes}
             />
           ))}
         </div>
