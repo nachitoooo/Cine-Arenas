@@ -1,7 +1,4 @@
 # Importaciones necesarias desde el framework Django REST y otros módulos relevantes
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from rest_framework import viewsets, generics, filters, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -28,9 +25,7 @@ from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer,
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-import requests
-import sendgrid
-from sendgrid.helpers.mail import Mail
+
 # ------------------------ ViewSet para manejar las operaciones CRUD en el modelo Movie ------------------------
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()  # Consulta para obtener todas las películas
@@ -122,46 +117,6 @@ def user_logout(request):
     except AttributeError:
         return Response({'error': 'El usuario no tiene un token de autenticación'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-def send_invoice_email(email, invoice_data):
-    from_email = settings.EMAIL_HOST_USER
-    to_email = email
-    subject = 'Tu factura de Cine Arenas'
-    body = f"""
-    <h1>Factura de Cine Arenas</h1>
-    <p>Película: {invoice_data['movie_title']}</p>
-    <p>Sala: {invoice_data['hall_name']}</p>
-    <p>Formato: {invoice_data['format']}</p>
-    <p>Horario: {invoice_data['showtime']}</p>
-    <p>Asientos:</p>
-    <ul>
-        {''.join([f"<li>{seat['row']}{seat['number']}</li>" for seat in invoice_data['seats']])}
-    </ul>
-    <p>Total: ${invoice_data['total_amount']}</p>
-    """
-
-    msg = MIMEMultipart()
-    msg['From'] = from_email
-    msg['To'] = to_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'html'))
-
-    try:
-        server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
-        server.starttls()
-        server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-        server.sendmail(from_email, to_email, msg.as_string())
-        server.quit()
-        print("Email sent successfully")
-        return True
-    except Exception as e:
-        print(f"Failed to send email: {e}")
-        return False
-
-
-
 # Vista pública para listar todas las películas sin necesidad de autenticación
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -209,7 +164,7 @@ def create_payment(request):
             "movie_title": movie.title,
             "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
             "total_amount": ticket_price * len(seats),
-            "ticket_price": ticket_price,
+            "ticket_price": ticket_price,  # Añadir ticket_price aquí
             "hall_name": movie.hall_name,
             "format": format,
             "showtime": showtime_local.strftime('%Y-%m-%dT%H:%M:%S')
@@ -219,26 +174,7 @@ def create_payment(request):
     preference_response = sdk.preference().create(preference_data)
     preference = preference_response["response"]
 
-    print(f"Preference data sent to MercadoPago: {preference_data}")
-    print(f"Preference response from MercadoPago: {preference}")
-
-    # Enviar la factura al correo electrónico del usuario
-    invoice_data = {
-        "movie_title": movie.title,
-        "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
-        "total_amount": ticket_price * len(seats),
-        "ticket_price": ticket_price,
-        "hall_name": movie.hall_name,
-        "format": format,
-        "showtime": showtime_local.strftime('%Y-%m-%d %H:%M:%S')
-    }
-    if send_invoice_email(email, invoice_data):
-        print("Email sent successfully")
-    else:
-        print("Failed to send email")
-
     return Response(preference, status=status.HTTP_201_CREATED)
-
 
 @csrf_exempt
 @require_GET
@@ -246,31 +182,19 @@ def payment_success(request):
     preference_id = request.GET.get('preference_id')
 
     if not preference_id:
-        print("No preference ID found in request")
         return JsonResponse({"error": "Preference ID is required"}, status=400)
 
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     preference_response = sdk.preference().get(preference_id)
-    preference = preference_response.get("response")
+    preference = preference_response["response"]
 
-    if not preference:
-        print(f"No preference found for ID: {preference_id}")
-        return JsonResponse({"error": "No preference found"}, status=404)
-
-    print(f"Preference found: {preference}")
-
-    movie_title = preference.get("metadata", {}).get("movie_title")
-    seats = preference.get("metadata", {}).get("seats", [])
-    total_amount = preference.get("metadata", {}).get("total_amount")
-    ticket_price = preference.get("metadata", {}).get("ticket_price")
-    hall_name = preference.get("metadata", {}).get("hall_name")
-    format = preference.get("metadata", {}).get("format")
-    showtime = preference.get("metadata", {}).get("showtime")
-    email = preference.get("payer", {}).get("email")
-
-    if not all([movie_title, seats, total_amount, ticket_price, hall_name, format, showtime, email]):
-        print("Missing data in MercadoPago preference metadata")
-        return JsonResponse({"error": "Missing data in preference metadata"}, status=500)
+    movie_title = preference["metadata"]["movie_title"]
+    seats = preference["metadata"]["seats"]
+    total_amount = preference["metadata"]["total_amount"]
+    ticket_price = preference["metadata"]["ticket_price"]  # Asegurarse de que esto esté presente
+    hall_name = preference["metadata"]["hall_name"]
+    format = preference["metadata"]["format"]
+    showtime = preference["metadata"]["showtime"]
 
     # Convertir el showtime a un objeto datetime
     showtime_datetime = datetime.strptime(showtime, '%Y-%m-%dT%H:%M:%S')
@@ -283,18 +207,10 @@ def payment_success(request):
         "movie_title": movie_title,
         "seats": seats,
         "total_amount": total_amount,
-        "ticket_price": ticket_price,
+        "ticket_price": ticket_price,  # Asegurarse de que esto esté presente
         "hall_name": hall_name,
         "format": format,
         "showtime": showtime_local.strftime('%Y-%m-%d %H:%M:%S')
     }
-
-    print(f"Invoice data: {invoice_data}")
-    print(f"Sending email to: {email}")
-
-    if send_invoice_email(email, invoice_data):
-        print("Email sent successfully")
-    else:
-        print("Failed to send email")
 
     return JsonResponse(invoice_data)
