@@ -1,10 +1,26 @@
 from rest_framework import serializers
 from .models import Movie, Seat, Reservation, Showtime
-
+import pytz
+from django.utils import timezone
+import datetime
 class ShowtimeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Showtime
         fields = ['id', 'showtime']
+
+    def to_representation(self, instance):
+        argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
+        showtime_local = instance.showtime.astimezone(argentina_tz)
+        ret = super().to_representation(instance)
+        ret['showtime'] = showtime_local.strftime('%Y-%m-%dT%H:%M:%S')
+        return ret
+
+    def to_internal_value(self, data):
+        argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
+        showtime = datetime.strptime(data['showtime'], '%Y-%m-%dT%H:%M:%S')
+        showtime = argentina_tz.localize(showtime)
+        data['showtime'] = showtime
+        return super().to_internal_value(data)
 
 class MovieSerializer(serializers.ModelSerializer):
     showtime_1 = serializers.DateTimeField(write_only=True, required=False)
