@@ -2,6 +2,8 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders 
 from rest_framework import viewsets, generics, filters, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -127,17 +129,46 @@ def send_invoice_email(email, invoice_data):
     from_email = settings.EMAIL_HOST_USER
     to_email = email
     subject = 'Tu factura de Cine Arenas'
+    # HTML para el cuerpo del correo electrónico
     body = f"""
-    <h1>Factura de Cine Arenas</h1>
-    <p>Película: {invoice_data['movie_title']}</p>
-    <p>Sala: {invoice_data['hall_name']}</p>
-    <p>Formato: {invoice_data['format']}</p>
-    <p>Horario: {invoice_data['showtime']}</p>
-    <p>Asientos:</p>
-    <ul>
-        {''.join([f"<li>{seat['row']}{seat['number']}</li>" for seat in invoice_data['seats']])}
-    </ul>
-    <p>Total: ${invoice_data['total_amount']}</p>
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: #333; font-family: Arial, sans-serif;">
+      <div style="background-color: #ffffff; color: #333; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 800px; width: 100%; text-align: left;">
+        <div style="margin-bottom: 20px;">
+          <h3 style="font-size: 1.5rem; color: #2d3748;">Película: {invoice_data['movie_title']}</h3>
+          <h4 style="font-size: 1.2rem; color: #2d3748;">Sala: {invoice_data['hall_name']}</h4>
+          <h4 style="font-size: 1.2rem; color: #2d3748;">Formato: {invoice_data['format']}</h4>
+          <h4 style="font-size: 1.2rem; color: #2d3748;">Horario: {invoice_data['showtime']}</h4>
+          <h4 style="font-size: 1.2rem; color: #2d3748;">Número de asiento:</h4>
+          <ul style="list-style-type: disc; padding-inline-start: 20px; color: #2d3748;">
+            {''.join([f"<li>{seat['row']}{seat['number']}</li>" for seat in invoice_data['seats']])}
+          </ul>
+        </div>
+        <div style="margin-bottom: 20px; border-top: 2px solid #e2e8f0; padding-top: 10px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="border-bottom: 2px solid #e2e8f0; padding: 10px 0; text-align: left;">CANT.</th>
+                <th style="border-bottom: 2px solid #e2e8f0; padding: 10px 0; text-align: left;">DESCRIPCIÓN</th>
+                <th style="border-bottom: 2px solid #e2e8f0; padding: 10px 0; text-align: right;">IMPORTE</th>
+              </tr>
+            </thead>
+            <tbody>
+              {''.join([f"<tr><td style='padding: 10px 0;'>1</td><td style='padding: 10px 0;'>{seat['row']}{seat['number']}</td><td style='padding: 10px 0; text-align: right;'>${invoice_data['ticket_price']}</td></tr>" for seat in invoice_data['seats']])}
+            </tbody>
+          </table>
+        </div>
+        <div style="text-align: right; margin-bottom: 20px;">
+          <h3 style="font-size: 1.5rem; color: #2d3748;">TOTAL: ${invoice_data['total_amount']}</h3>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+          <a href="#" style="background-color: #4a90e2; color: #ffffff; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-size: 1rem;">Imprimir Ticket</a>
+        </div>
+        <div style="text-align: center; border-top: 2px solid #e2e8f0; padding-top: 10px;">
+          <p>Cine arenas - San Bernardo del Tuyú</p>
+        </div>
+      </div>
+    </div>
     """
 
     msg = MIMEMultipart()
@@ -145,6 +176,7 @@ def send_invoice_email(email, invoice_data):
     msg['To'] = to_email
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'html'))
+
 
     try:
         server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
@@ -157,7 +189,6 @@ def send_invoice_email(email, invoice_data):
     except Exception as e:
         print(f"Failed to send email: {e}")
         return False
-
 
 # Vista pública para listar todas las películas sin necesidad de autenticación
 @api_view(['POST'])
