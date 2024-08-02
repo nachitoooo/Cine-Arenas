@@ -136,6 +136,9 @@ def create_payment(request):
     movie = Movie.objects.get(id=movie_id) if movie_id else None
     showtime = Showtime.objects.get(id=showtime_id)
 
+    # Precio unitario del ticket
+    ticket_price = 100.00
+
     # Parsear y convertir la hora del showtime a la zona horaria de Argentina
     argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
     showtime_local = showtime.showtime.astimezone(argentina_tz)
@@ -143,9 +146,9 @@ def create_payment(request):
     preference_data = {
         "items": [
             {
-                "title": f"Ticket para : {movie.title}",
+                "title": f"Movie Ticket for {movie.title}",
                 "quantity": len(seats),
-                "unit_price": 100.00
+                "unit_price": ticket_price
             }
         ],
         "payer": {
@@ -160,7 +163,8 @@ def create_payment(request):
         "metadata": {
             "movie_title": movie.title,
             "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
-            "total_amount": 100.00 * len(seats),
+            "total_amount": ticket_price * len(seats),
+            "ticket_price": ticket_price,  # Añadir ticket_price aquí
             "hall_name": movie.hall_name,
             "format": format,
             "showtime": showtime_local.strftime('%Y-%m-%dT%H:%M:%S')
@@ -187,6 +191,7 @@ def payment_success(request):
     movie_title = preference["metadata"]["movie_title"]
     seats = preference["metadata"]["seats"]
     total_amount = preference["metadata"]["total_amount"]
+    ticket_price = preference["metadata"]["ticket_price"]  # Asegurarse de que esto esté presente
     hall_name = preference["metadata"]["hall_name"]
     format = preference["metadata"]["format"]
     showtime = preference["metadata"]["showtime"]
@@ -202,6 +207,7 @@ def payment_success(request):
         "movie_title": movie_title,
         "seats": seats,
         "total_amount": total_amount,
+        "ticket_price": ticket_price,  # Asegurarse de que esto esté presente
         "hall_name": hall_name,
         "format": format,
         "showtime": showtime_local.strftime('%Y-%m-%d %H:%M:%S')

@@ -13,6 +13,7 @@ interface Invoice {
   movie_title: string;
   seats: Seat[];
   total_amount: number;
+  ticket_price: number; // Añadir ticket_price
   invoice_id: string;
   hall_name: string;
   format: string;
@@ -103,7 +104,7 @@ const PaymentSuccess = () => {
                 <tr key={index}>
                   <td style={{ padding: '10px 0' }}>1</td>
                   <td style={{ padding: '10px 0' }}>{seat.row}{seat.number}</td>
-                  <td style={{ padding: '10px 0', textAlign: 'right' }}>${invoice.total_amount}</td>
+                  <td style={{ padding: '10px 0', textAlign: 'right' }}>${invoice.ticket_price}</td>
                 </tr>
               ))}
             </tbody>
