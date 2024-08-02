@@ -167,3 +167,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MERCADOPAGO_ACCESS_TOKEN = 'TEST-8741947583291739-072122-b02e1fa984fdd25c0b43bdfa04f9d9cf-716882574'
+
+SENDGRID_API_KEY = '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'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'aristeguiignacio025@gmail.com'
+EMAIL_HOST_PASSWORD = 'wdhk cmkq imiy qsth'
+EMAIL_USE_TLS = True

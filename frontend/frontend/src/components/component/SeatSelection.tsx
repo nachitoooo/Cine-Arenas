@@ -75,41 +75,42 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         alert("No seats selected");
         return;
       }
-
+  
       if (!email) {
         alert("Email is required");
         return;
       }
-
+  
       if (!selectedFormat || !selectedShowtime) {
         alert("Format and showtime are required");
         return;
       }
-
+  
       const response = await axios.post("http://localhost:8000/api/reservations/", {
         movie: movieId,
         seats: selectedSeats,
       });
-
-      const Swal = require('sweetalert2')
-
+  
+      const Swal = require('sweetalert2');
+  
       Swal.fire({
         title: 'Confirmado!',
         text: 'Asientos reservados correctamente',
         icon: 'success',
         confirmButtonText: 'Ok'
-      })
-
+      });
+  
       const paymentResponse = await axios.post("http://localhost:8000/api/create-payment/", {
         seats: selectedSeats,
         email: email,
         format: selectedFormat,
         showtime_id: selectedShowtime,
       });
-
+  
       setSelectedSeats([]);
+      console.log('Redirecting to payment URL:', paymentResponse.data.init_point);
       window.location.href = paymentResponse.data.init_point;
-
+  
       const updatedSeats = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
       setSeats(updatedSeats.data);
     } catch (error) {
