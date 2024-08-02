@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 
-// Definición de la interfaz para los asientos
 interface Seat {
   id: number;
   row: string;
@@ -11,14 +10,12 @@ interface Seat {
   is_reserved: boolean;
 }
 
-interface Invoice {
-  total_amount: number;
-}
-
 interface Movie {
   image: string | null;
   title: string;
   description: string;
+  format: string;
+  showtimes: { id: number; showtime: string }[];
 }
 
 interface SeatSelectionProps {
@@ -26,20 +23,18 @@ interface SeatSelectionProps {
 }
 
 const SeatSelection = ({ movieId }: SeatSelectionProps) => {
-  // Estados locales
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const [email, setEmail] = useState("");
   const [movie, setMovie] = useState<Movie | null>(null);
   const [subtotal, setSubtotal] = useState<number>(0);
+  const [selectedFormat, setSelectedFormat] = useState<string>("");
+  const [selectedShowtime, setSelectedShowtime] = useState<number | null>(null);
 
-  // Efecto para cargar los asientos disponibles al inicio y cuando cambia movieId
   useEffect(() => {
     const fetchSeats = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/seats/?movie_id=${movieId}`
-        );
+        const response = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
         setSeats(response.data);
       } catch (error) {
         console.error("Error fetching seats:", error);
@@ -48,10 +43,10 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
 
     const fetchMovie = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/movies/${movieId}/`
-        );
+        const response = await axios.get(`http://localhost:8000/api/movies/${movieId}/`);
         setMovie(response.data);
+        setSelectedFormat(response.data.format);
+        setSelectedShowtime(response.data.showtimes.length > 0 ? response.data.showtimes[0].id : null);
       } catch (error) {
         console.error("Error fetching movie:", error);
       }
@@ -61,9 +56,8 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
     fetchMovie();
   }, [movieId]);
 
-  // Efecto para calcular el subtotal cada vez que cambian los asientos seleccionados
   useEffect(() => {
-    const seatPrice = 100 ;/*  #precio por asiento (a definir por el cliente) */
+    const seatPrice = 100;
     setSubtotal(selectedSeats.length * seatPrice);
   }, [selectedSeats]);
 
@@ -78,7 +72,6 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   const handleReserveSeats = async () => {
     try {
       if (selectedSeats.length === 0) {
-        
         alert("No seats selected");
         return;
       }
@@ -88,13 +81,16 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         return;
       }
 
-      const response = await axios.post(
-        "http://localhost:8000/api/reservations/",
-        {
-          movie: movieId,
-          seats: selectedSeats,
-        }
-      );
+      if (!selectedFormat || !selectedShowtime) {
+        alert("Format and showtime are required");
+        return;
+      }
+
+      const response = await axios.post("http://localhost:8000/api/reservations/", {
+        movie: movieId,
+        seats: selectedSeats,
+      });
+
       const Swal = require('sweetalert2')
 
       Swal.fire({
@@ -104,25 +100,35 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         confirmButtonText: 'Ok'
       })
 
-      const paymentResponse = await axios.post(
-        "http://localhost:8000/api/create-payment/",
-        {
-          seats: selectedSeats,
-          email: email,
-        }
-      );
+      const paymentResponse = await axios.post("http://localhost:8000/api/create-payment/", {
+        seats: selectedSeats,
+        email: email,
+        format: selectedFormat,
+        showtime_id: selectedShowtime,
+      });
 
       setSelectedSeats([]);
       window.location.href = paymentResponse.data.init_point;
 
-      const updatedSeats = await axios.get(
-        `http://localhost:8000/api/seats/?movie_id=${movieId}`
-      );
+      const updatedSeats = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
       setSeats(updatedSeats.data);
     } catch (error) {
       console.error("Error reserving seats:", error);
       alert("Error reserving seats. Please try again.");
     }
+  };
+
+  const formatDateToArgentinaTime = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      timeZone: 'America/Argentina/Buenos_Aires'
+    };
+    return new Date(dateString).toLocaleString('es-AR', options);
   };
 
   return (
@@ -152,6 +158,29 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           className="mb-4 p-2 border rounded-lg w-100 text-black"
           required
         />
+        <div className="mb-4">
+          <label className="block text-white">Formato:</label>
+          <select value={selectedFormat} onChange={(e) => setSelectedFormat(e.target.value)} className="p-2 border rounded-lg w-full text-black">
+            <option value="2D">2D</option>
+            <option value="3D">3D</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-white">Horarios:</label>
+          {movie?.showtimes.map((showtime) => (
+            <div key={showtime.id} className="flex items-center mb-2">
+              <input
+                type="radio"
+                name="showtime"
+                value={showtime.id}
+                checked={selectedShowtime === showtime.id}
+                onChange={() => setSelectedShowtime(showtime.id)}
+                className="mr-2"
+              />
+              <label className="text-white">{formatDateToArgentinaTime(showtime.showtime)}</label>
+            </div>
+          ))}
+        </div>
         <div className="grid grid-cols-10 gap-2 mb-4">
           {seats.map((seat) => (
             <Button

@@ -52,9 +52,6 @@ class MovieSerializer(serializers.ModelSerializer):
         
         return instance
 
-
-
-
 class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat

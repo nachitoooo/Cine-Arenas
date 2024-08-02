@@ -15,6 +15,10 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 import mercadopago
+from datetime import datetime  # Asegúrate de importar correctamente la clase datetime
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone
+import pytz
 from django.conf import settings
 from .models import Movie, Seat, Reservation, Showtime
 from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer, ShowtimeSerializer
@@ -114,32 +118,28 @@ def user_logout(request):
         return Response({'error': 'El usuario no tiene un token de autenticación'}, status=status.HTTP_400_BAD_REQUEST)
 
 # Vista pública para listar todas las películas sin necesidad de autenticación
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def public_movie_list(request):
-    movies = Movie.objects.all()  # Consulta para obtener todas las películas
-    serializer = MovieSerializer(movies, many=True)  # Serializar todas las películas
-    return Response(serializer.data)
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_payment(request):
-    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)  # Inicializar SDK de MercadoPago
-    
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+
     email = request.data.get('email')
     seats = request.data.get('seats', [])
-    if not email or not seats:
-        return Response({"error": "Email and seats are required for payment"}, status=status.HTTP_400_BAD_REQUEST)
+    format = request.data.get('format')
+    showtime_id = request.data.get('showtime_id')
 
-    # Obtener información de los asientos y la película
+    if not email or not seats or not format or not showtime_id:
+        return Response({"error": "Email, seats, format, and showtime_id are required for payment"}, status=status.HTTP_400_BAD_REQUEST)
+
     seat_objects = Seat.objects.filter(id__in=seats)
     movie_id = seat_objects.first().movie_id if seat_objects.exists() else None
     movie = Movie.objects.get(id=movie_id) if movie_id else None
+    showtime = Showtime.objects.get(id=showtime_id)
 
-    # Obtener el primer horario de la película
-    showtime = Showtime.objects.filter(movie=movie).first()
+    # Parsear y convertir la hora del showtime a la zona horaria de Argentina
+    argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
+    showtime_local = showtime.showtime.astimezone(argentina_tz)
 
-    # Crear preferencia de pago con los detalles de la compra
     preference_data = {
         "items": [
             {
@@ -162,22 +162,21 @@ def create_payment(request):
             "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
             "total_amount": 100.00 * len(seats),
             "hall_name": movie.hall_name,
-            "format": movie.format,
-            "showtime": showtime.showtime.strftime('%Y-%m-%dT%H:%M:%S') if showtime else ""
+            "format": format,
+            "showtime": showtime_local.strftime('%Y-%m-%dT%H:%M:%S')
         }
     }
 
-    preference_response = sdk.preference().create(preference_data)  # Crear preferencia en MercadoPago
+    preference_response = sdk.preference().create(preference_data)
     preference = preference_response["response"]
 
-    # Devolver la preferencia creada en la respuesta
     return Response(preference, status=status.HTTP_201_CREATED)
 
 @csrf_exempt
 @require_GET
 def payment_success(request):
     preference_id = request.GET.get('preference_id')
-    
+
     if not preference_id:
         return JsonResponse({"error": "Preference ID is required"}, status=400)
 
@@ -185,7 +184,6 @@ def payment_success(request):
     preference_response = sdk.preference().get(preference_id)
     preference = preference_response["response"]
 
-    # Extraer los datos de la preferencia
     movie_title = preference["metadata"]["movie_title"]
     seats = preference["metadata"]["seats"]
     total_amount = preference["metadata"]["total_amount"]
@@ -193,15 +191,20 @@ def payment_success(request):
     format = preference["metadata"]["format"]
     showtime = preference["metadata"]["showtime"]
 
-    # Crear datos de la factura
+    # Convertir el showtime a un objeto datetime
+    showtime_datetime = datetime.strptime(showtime, '%Y-%m-%dT%H:%M:%S')
+
+    # Convertir el showtime a la zona horaria de Argentina
+    argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
+    showtime_local = showtime_datetime.astimezone(argentina_tz)
+
     invoice_data = {
         "movie_title": movie_title,
         "seats": seats,
         "total_amount": total_amount,
         "hall_name": hall_name,
         "format": format,
-        "showtime": showtime
+        "showtime": showtime_local.strftime('%Y-%m-%d %H:%M:%S')
     }
 
-    # Devolver los datos de la factura en una respuesta JSON
     return JsonResponse(invoice_data)
