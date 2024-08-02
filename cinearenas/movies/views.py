@@ -143,7 +143,7 @@ def create_payment(request):
     preference_data = {
         "items": [
             {
-                "title": f"Movie Ticket for {movie.title}",
+                "title": f"Ticket para : {movie.title}",
                 "quantity": len(seats),
                 "unit_price": 100.00
             }
