@@ -1,10 +1,10 @@
-// cinema-landing.tsx
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { FaBars } from "react-icons/fa";
 import MovieCard from "./MovieCard";
 import CinemaCarousel from "./cinema-carousel";
 import "tailwindcss/tailwind.css";
+import CinemaNavbar from "./cinema-navbar"; // Importa el nuevo componente de navbar
 
 interface Showtime {
   id: number;
@@ -64,44 +64,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
           ></div>
         </div>
 
-        <nav className="relative z-20 p-4 lg:px-16 flex items-center justify-between bg-gradient-to-b from-black to-transparent">
-          <Link href="#">
-            <img
-              src="img/logo.jpg"
-              style={{ filter: "invert(1)", marginLeft: "1rem" }}
-              alt="Cine Arenas"
-              className="w-32"
-            />
-          </Link>
-          <button data-menu-toggle className="lg:hidden block pr-1">
-            <FaBars className="fill-current text-white w-6 h-6" />
-          </button>
-          <ul
-            className="lg:flex flex-grow items-center justify-center space-x-24 text-lg font-medium navbar-font hidden"
-            data-menu
-          >
-            <li>
-              <Link href="#" className="text-white hover:text-gray-300">
-                Inicio
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="text-white hover:text-gray-300">
-                Cartelera
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="text-white hover:text-gray-300">
-                Próximos estrenos
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="text-white hover:text-gray-300">
-                Nosotros
-              </Link>
-            </li>
-          </ul>
-        </nav>
+        <CinemaNavbar /> {/* Utiliza el nuevo componente de navbar */}
       </header>
 
       <section className="container mx-auto mt-12 lg:px-16 px-4">
