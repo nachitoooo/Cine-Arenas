@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FaTimes } from "react-icons/fa";
 import { PiArmchairLight } from "react-icons/pi";
-import { motion, AnimatePresence } from "framer-motion"; // Asegúrate de que estas importaciones son correctas
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Showtime {
   id: number;
