@@ -147,7 +147,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       </div>
 
       <div className="flex-1">
-        <h2 className="text-2xl font-bold mb-4">
+        <h2 className="text-3xl font-bold mb-4 text-center">
           Seleccionar asientos para - {movie?.title}
         </h2>
         <input
@@ -209,12 +209,15 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         </div>
         <div className="flex justify-end">
           <div className="text-2xl mr-12">Subtotal: ${subtotal}</div>
+          
           <Button
             onClick={handleReserveSeats}
             className="bg-blue-500 text-white px-4 py-2 rounded"
             disabled={selectedSeats.length === 0}
           >
             Reservar asientos seleccionados
+            <PiArmchairLight size={22} className="ml-2"> </PiArmchairLight>
+            
           </Button>
         </div>
       </div>

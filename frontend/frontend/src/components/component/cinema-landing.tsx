@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { FaBars } from "react-icons/fa";
-import { MovieCard } from "./MovieCard"; // Asegúrate de importar el componente MovieCard
+import MovieCard from "./MovieCard";
 import CinemaCarousel from "./cinema-carousel";
 import "tailwindcss/tailwind.css";
 

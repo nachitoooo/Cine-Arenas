@@ -160,10 +160,7 @@ def send_invoice_email(email, invoice_data):
         <div style="text-align: right; margin-bottom: 20px;">
           <h3 style="font-size: 1.5rem; color: #2d3748;">TOTAL: ${invoice_data['total_amount']}</h3>
         </div>
-        
-        <div style="text-align: center; margin-bottom: 20px;">
-          <a href="#" style="background-color: #4a90e2; color: #ffffff; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-size: 1rem;">Imprimir Ticket</a>
-        </div>
+
         <div style="text-align: center; border-top: 2px solid #e2e8f0; padding-top: 10px;">
           <p>Cine arenas - San Bernardo del Tuyú</p>
         </div>

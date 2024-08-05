@@ -51,7 +51,7 @@ const LoginForm = () => {
         <div className="login-container">
             <div className="card">
                 <div className="card-header">
-                    <h3 className="card-title">Ingresar</h3>
+                    <h3 className="card-title">Panel de administrador</h3>
                 </div>
                 <div className="card-content">
                     {errorMessage && (

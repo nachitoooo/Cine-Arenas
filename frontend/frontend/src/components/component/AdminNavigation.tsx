@@ -2,6 +2,7 @@ import Link from "next/link";
 import 'tailwindcss/tailwind.css';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { FaPowerOff } from "react-icons/fa";
 
 const AdminNavigation = () => {
   const router = useRouter();
@@ -61,7 +62,10 @@ const AdminNavigation = () => {
           <Link href="/create-movie" className="text-white hover:text-gray-400">Crear película</Link>
 
           <Link href="/edit-movie" className="text-white hover:text-gray-400">Gestionar películas </Link>
-          <button onClick={handleLogout} className="text-white hover:text-gray-400 mb-[6.5px]">Cerrar Sesión</button>
+          
+          <button onClick={handleLogout} className="text-white hover:text-gray-400 flex items-center mb-[6.5px]">
+              <FaPowerOff className="mr-1" /> Cerrar sesión
+            </button>
         </div>
       </div>
     </nav>

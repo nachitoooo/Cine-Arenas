@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
+import Swal from 'sweetalert2'; // Importar SweetAlert2
 import MovieForm from './movie-form';
 import AdminNavigation from './AdminNavigation';
 import '../../app/globals.css'; // Importación correcta del archivo CSS
@@ -11,6 +12,10 @@ interface Movie {
   description: string;
   release_date: string;
   image: string | null;
+  cinema_listing: string | null;
+  hall_name: string;
+  format: string;
+  showtimes: string[];
 }
 
 interface MovieListProps {
@@ -40,16 +45,40 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
   };
 
   const handleDelete = async (movieId: number) => {
-    const token = localStorage.getItem('authToken');
-    try {
-      await axios.delete(`http://localhost:8000/api/movies/${movieId}/`, {
-        headers: {
-          'Authorization': `Token ${token}`
-        }
-      });
-      setMovies(movies.filter(movie => movie.id !== movieId));
-    } catch (error) {
-      console.error('Error deleting movie:', error);
+    // Muestra el cuadro de diálogo de confirmación
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¡No podrás revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminarlo!',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      const token = localStorage.getItem('authToken');
+      try {
+        await axios.delete(`http://localhost:8000/api/movies/${movieId}/`, {
+          headers: {
+            'Authorization': `Token ${token}`
+          }
+        });
+        setMovies(movies.filter(movie => movie.id !== movieId));
+        Swal.fire(
+          '¡Eliminado!',
+          'La película ha sido eliminada.',
+          'success'
+        );
+      } catch (error) {
+        console.error('Error deleting movie:', error);
+        Swal.fire(
+          'Error',
+          'Hubo un problema al eliminar la película.',
+          'error'
+        );
+      }
     }
   };
 
@@ -90,10 +119,8 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
   };
 
   return (
-    
-    <div className="container mx-auto px-4 " >
-            <AdminNavigation/>
-
+    <div className="container mx-auto px-4">
+      <AdminNavigation />
       <h1 className="text-4xl font-bold mb-8 text-center text-white">Lista de Películas</h1>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {movies.map(movie => (
@@ -130,7 +157,6 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
         </div>
       )}
     </div>
-    
   );
 };
 
