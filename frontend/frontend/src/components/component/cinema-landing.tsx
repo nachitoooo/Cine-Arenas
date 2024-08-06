@@ -2,9 +2,12 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { FaBars } from "react-icons/fa";
 import MovieCard from "./MovieCard";
-import CinemaCarousel from "./cinema-carousel";
 import "tailwindcss/tailwind.css";
+import CinemaCarousel from "./cinema-carousel";
 import CinemaNavbar from "./cinema-navbar"; // Importa el nuevo componente de navbar
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 interface Showtime {
   id: number;
@@ -46,6 +49,33 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
     };
   }, []);
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          initialSlide: 1,
+        },
+      },
+    ],
+  };
+
   return (
     <div className="antialiased bg-black text-white">
       <header className="relative w-full h-screen overflow-hidden">
@@ -76,20 +106,21 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
         </h2>
 
         {/* Renderizar imágenes de la cartelera */}
-        <div className="flex flex-wrap justify-center gap-4">
+        <Slider {...settings} className="movie-carousel">
           {movies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              id={movie.id}
-              image={movie.image}
-              title={movie.title}
-              description={movie.description}
-              hallName={movie.hall_name}
-              format={movie.format}
-              showtimes={movie.showtimes}
-            />
+            <div key={movie.id} className="px-1">
+              <MovieCard
+                id={movie.id}
+                image={movie.image}
+                title={movie.title}
+                description={movie.description}
+                hallName={movie.hall_name}
+                format={movie.format}
+                showtimes={movie.showtimes}
+              />
+            </div>
           ))}
-        </div>
+        </Slider>
       </section>
 
       <footer className="rounded-lg shadow dark:bg-gray-900">

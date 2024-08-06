@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FaTimes } from "react-icons/fa";
 import { PiArmchairLight } from "react-icons/pi";
 import { motion, AnimatePresence } from "framer-motion";
+import Portal from "./portal";
 
 interface Showtime {
   id: number;
@@ -35,12 +36,15 @@ const MovieCard: React.FC<MovieCardProps> = ({
     return !isNaN(date.getTime()) ? date.toLocaleString() : showtime;
   };
 
-  const openModal = () => setIsOpen(true);
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
   const closeModal = () => setIsOpen(false);
 
   return (
     <>
-      <div className="max-w-xs w-full h-96 cursor-pointer" onClick={openModal}>
+      <div className="max-w-xs w-full h-96 cursor-pointer m-2" onClick={openModal}>
         <div
           className="group w-full h-full overflow-hidden relative rounded-lg shadow-lg bg-cover bg-center bg-no-repeat transition-transform duration-500 hover:shadow-2xl hover:scale-105"
           style={{
@@ -48,23 +52,23 @@ const MovieCard: React.FC<MovieCardProps> = ({
           }}
         >
           <div className="absolute top-0 left-0 right-0 p-4">
+            {/* Puedes agregar más contenido aquí si es necesario */}
           </div>
         </div>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      {isOpen && (
+        <Portal>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={closeModal}
           >
             <motion.div
-              className="bg-gray-900 text-white rounded-lg shadow-2xl max-w-md w-full p-6"
+              className="bg-gray-900 text-white rounded-lg shadow-2xl max-w-md w-full p-6 relative"
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()} // Esto previene que el clic dentro del modal cierre el modal
             >
               <div className="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
                 <h2 className="text-xl font-semibold">{title}</h2>
@@ -104,9 +108,9 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 </button>
               </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </Portal>
+      )}
     </>
   );
 };

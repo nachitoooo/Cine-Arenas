@@ -1,43 +1,43 @@
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
 
-.slider {
-  margin: 0 20px;
-  overflow: hidden;
-  padding: 2rem 0;
-}
+  .slider {
+    margin: 0 20px;
+    overflow: hidden;
+    padding: 2rem 0;
+  }
 
-.slider-image {
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
-  border-radius: 10px;
-}
+  .slider-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
 
-.react-multi-carousel-list {
-  padding: 0rem 0 2rem 0;
-}
+  .react-multi-carousel-list {
+    padding: 0rem 0 2rem 0;
+  }
 
-.custom-dot-list-style button {
-  border: none;
-  background: rgb(128, 128, 128);
-}
+  .custom-dot-list-style button {
+    border: none;
+    background: rgb(128, 128, 128);
+  }
 
-.react-multi-carousel-dot.react-multi-carousel-dot--active button {
-  background: rgb(68, 68, 68) !important;
-}
+  .react-multi-carousel-dot.react-multi-carousel-dot--active button {
+    background: rgb(68, 68, 68) !important;
+  }
 
-a.bg-brand {
-  transition: background-color 0.3s;
-}
+  a.bg-brand {
+    transition: background-color 0.3s;
+  }
 
-.buy-tickets-btn {
-  border-radius: 1px;
-}
+  .buy-tickets-btn {
+    border-radius: 1px;
+  }
 
-.parent {
-  padding: 0 20px;
-}
+  .parent {
+    padding: 0 20px;
+  }
