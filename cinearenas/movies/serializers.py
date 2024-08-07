@@ -26,9 +26,9 @@ class MovieSerializer(serializers.ModelSerializer):
     showtime_1 = serializers.DateTimeField(write_only=True, required=False)
     showtime_2 = serializers.DateTimeField(write_only=True, required=False)
     showtime_3 = serializers.DateTimeField(write_only=True, required=False)
-    # Añade tantos campos de showtime como necesites
-
     showtimes = ShowtimeSerializer(many=True, read_only=True)
+    cinema_listing = serializers.ImageField(required=False)  # Añade este campo
+
 
     class Meta:
         model = Movie

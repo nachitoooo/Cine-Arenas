@@ -11,7 +11,7 @@ interface Seat {
 }
 
 interface Movie {
-  image: string | null;
+  cinema_listing: string | null; // Cambiado de 'image' a 'cinema_listing'
   title: string;
   description: string;
   format: string;
@@ -137,7 +137,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         {movie && (
           <>
             <img
-              src={movie.image || "https://st4.depositphotos.com/14953852/24787/v/380/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"}
+              src={movie.cinema_listing || "https://st4.depositphotos.com/14953852/24787/v/380/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"}
               alt="Imagen de la película"
               className="w-96 h-100 rounded-lg shadow-lg"
             />  

@@ -30,12 +30,32 @@ from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer,
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-
+import os
 # ------------------------ ViewSet para manejar las operaciones CRUD en el modelo Movie ------------------------
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()  # Consulta para obtener todas las películas
     serializer_class = MovieSerializer  # Serializador para el modelo Movie
     permission_classes = [IsAuthenticated]  # Requiere autenticación para acceder a estas vistas
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # Eliminar archivos de imagen asociados
+        image_path = instance.image.path if instance.image else None
+        cinema_listing_path = instance.cinema_listing.path if instance.cinema_listing else None
+
+        # Eliminar la instancia de la base de datos primero para evitar errores en el frontend
+        self.perform_destroy(instance)
+
+        # Ahora intentamos eliminar los archivos
+        if image_path and os.path.isfile(image_path):
+            os.remove(image_path)
+        
+        if cinema_listing_path and os.path.isfile(cinema_listing_path):
+            os.remove(cinema_listing_path)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
 class ShowtimeViewSet(viewsets.ModelViewSet):
     queryset = Showtime.objects.all()

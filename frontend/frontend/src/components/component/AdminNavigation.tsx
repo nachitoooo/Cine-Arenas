@@ -2,7 +2,7 @@ import Link from "next/link";
 import 'tailwindcss/tailwind.css';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaPowerOff } from "react-icons/fa";
+import { FaPowerOff, FaHome, FaFilm, FaEdit } from "react-icons/fa"; // Importamos los iconos necesarios
 
 const AdminNavigation = () => {
   const router = useRouter();
@@ -53,19 +53,25 @@ const AdminNavigation = () => {
     }
   };
 
+  const navItemClasses = "text-white hover:text-gray-400 flex items-center py-2 px-4 rounded";
+
   return (
     <nav className="bg-[#111827] shadow-lg p-4 rounded-sm">
       <div className="container mx-auto flex justify-between">
-        <Link href="/" className="text-white text-2xl font-bold"> Cine arenas - Panel de administrador</Link>
+        <Link href="/" className="text-white text-2xl font-bold">Cine arenas - Panel de administrador</Link>
         <div className="flex space-x-4">
-        <Link href="/" className="text-white hover:text-gray-400">Inicio</Link>
-          <Link href="/create-movie" className="text-white hover:text-gray-400">Crear película</Link>
-
-          <Link href="/edit-movie" className="text-white hover:text-gray-400">Gestionar películas </Link>
-          
-          <button onClick={handleLogout} className="text-white hover:text-gray-400 flex items-center mb-[6.5px]">
-              <FaPowerOff className="mr-1" /> Cerrar sesión
-            </button>
+          <Link href="/" className={navItemClasses}>
+            <FaHome className="mr-1" /> Inicio
+          </Link>
+          <Link href="/create-movie" className={navItemClasses}>
+            <FaFilm className="mr-1" /> Crear película
+          </Link>
+          <Link href="/edit-movie" className={navItemClasses}>
+            <FaEdit className="mr-1" /> Gestionar películas
+          </Link>
+          <button onClick={handleLogout} className={`${navItemClasses} bg-red-400 hover:bg-red-700 `}>
+            <FaPowerOff className="mr-1" /> Cerrar sesión
+          </button>
         </div>
       </div>
     </nav>

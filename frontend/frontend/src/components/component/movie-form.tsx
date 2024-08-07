@@ -129,7 +129,7 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
       <div className="card">
         <div className="card-header">
           <h3 className="card-title">{movieId ? 'Editar Película' : 'Crear Película'}</h3>
-          <p className="card-description">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a tu catálogo.</p>
+          <p className="card-description">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a la cartelera.</p>
         </div>
         <div className="card-content">
           <form onSubmit={handleSubmit} className="form">

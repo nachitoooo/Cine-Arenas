@@ -77,7 +77,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
   };
 
   return (
-    <div className="antialiased bg-black text-white">
+    <div className="antialiased bg-black text-gray-200">
       <header className="relative w-full h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
           <CinemaCarousel movies={movies} />
@@ -99,16 +99,16 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
 
       <section className="container mx-auto mt-12 lg:px-16 px-4">
         <h2
-          className="mt-12 text-4xl font-semibold mb-4 text-center"
+          className="mt-12 text-6xl font-semibold mb-4 text-center"
           style={{ color: "white" }}
         >
-          Cartelera - Próximos estrenos
+          Cartelera 🍿
         </h2>
 
         {/* Renderizar imágenes de la cartelera */}
-        <Slider {...settings} className="movie-carousel">
+        <Slider {...settings}  > 
           {movies.map((movie) => (
-            <div key={movie.id} className="px-1">
+            <div key={movie.id} >
               <MovieCard
                 id={movie.id}
                 image={movie.image}
