@@ -35,55 +35,23 @@ const CinemaCarousel: React.FC<CinemaCarouselProps> = ({ movies }) => {
         interval={3000}
       >
         {movies.map((movie) => (
-          <Carousel.Item key={movie.id} style={{ height: '100vh' }}>
-            <div
-              style={{
-                height: '100%',
-                width: '100%',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
+          <Carousel.Item key={movie.id} className="h-screen">
+            <div className="h-full w-full relative overflow-hidden">
               <img
-                className="d-block w-100"
+                className="h-full w-full object-cover filter brightness-50"
                 src={movie.image || "https://via.placeholder.com/1920x1080"}
                 alt={movie.title}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  objectFit: 'cover',
-                  filter: 'brightness(0.7)',
-                }}
               />
             </div>
-            <div
-              className="absolute left-0 right-0 p-3"
-              style={{
-                bottom: '15%',
-                background: 'rgba(0, 0, 0, 0.4)',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                maxWidth: '80%',
-                margin: '0 auto',
-                borderRadius: '10px',
-              }}
-            >
-              <div className="mr-3">
-                <img
-                  src={movie.image || "https://via.placeholder.com/150x200"}
-                  alt={movie.title}
-                  style={{
-                    width: '70px',
-                    height: '100px',
-                    objectFit: 'cover',
-                    borderRadius: '5px',
-                  }}
-                />
-              </div>
+            <div className="absolute left-0 bottom-[10%] bg-black text-white max-w-2xl p-6 rounded-r-lg flex">
+              <img
+                src={movie.image || "https://via.placeholder.com/150x200"}
+                alt={movie.title}
+                className="w-20 h-32 object-cover rounded-md mr-4"
+              />
               <div>
-                <h5>{movie.title}</h5>
-                <p style={{ fontSize: '0.9rem', marginBottom: '5px' }}>{movie.description}</p>
+                <h3 className="text-3xl font-bold mb-4">{movie.title}</h3>
+                <p className="text-lg">{movie.description}</p>
               </div>
             </div>
           </Carousel.Item>
