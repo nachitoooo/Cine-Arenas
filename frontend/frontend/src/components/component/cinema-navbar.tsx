@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function CinemaNavbar() {
   return (
-    <header className="flex items-center justify-between p-4 border-b relative bg-white opacity-90">
+    <header className="flex items-center justify-between p-4  relative bg-black opacity-60 ">
       <div className="flex items-center">
       <img
                 src="img/logo.jpg"
@@ -14,16 +14,14 @@ export default function CinemaNavbar() {
               />
       </div>
       <nav className="flex items-center gap-4">
-        <Button variant="outline" className="text-pink-600 border-pink-600 ">
+        <Button variant="outline" className="text-white border-gray-200 ">
           Comprar entradas
           <IoTicket size={20} className='ml-[9px]'></IoTicket>
         </Button>
-        <Button variant="outline" className="text-black">
+        <Button variant="outline" className="text-white">
           Contactanos
         </Button>
-        <FaInstagram color='pink' className="w-6 h-6 " /> 
-        <FaFacebook color='darkblue' className="w-6 h-6 " /> 
-        <FaWhatsapp  color='green' className="w-6 h-6 " /> 
+        
       </nav>
     </header>
   );

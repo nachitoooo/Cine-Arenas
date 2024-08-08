@@ -53,6 +53,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
     dots: true,
     infinite: true,
     speed: 500,
+    centerMode: true,
     slidesToShow: 3,
     slidesToScroll: 1,
     responsive: [
@@ -99,14 +100,14 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
 
       <section className="container mx-auto mt-12 lg:px-16 px-4">
         <h2
-          className="mt-12 text-6xl font-semibold mb-4 text-center"
+          className="mt-12 text-5xl font-semibold mb-12 text-center"
           style={{ color: "white" }}
         >
-          Cartelera 🍿
+          Películas disponibles en cartelera
         </h2>
 
         {/* Renderizar imágenes de la cartelera */}
-        <Slider {...settings}  > 
+        <Slider className="mx-auto" {...settings}  > 
           {movies.map((movie) => (
             <div key={movie.id} >
               <MovieCard
