@@ -24,7 +24,7 @@ const CinemaCarousel: React.FC<CinemaCarouselProps> = ({ movies }) => {
 
   const handleNextClick = () => {
     carouselRef.current?.next?.();
-  };  
+  };
 
   return (
     <div className="relative">
@@ -32,7 +32,7 @@ const CinemaCarousel: React.FC<CinemaCarouselProps> = ({ movies }) => {
         ref={carouselRef}
         controls={false}
         indicators={false}
-        interval={3000} // Para deslizamiento automático
+        interval={3000}
       >
         {movies.map((movie) => (
           <Carousel.Item key={movie.id} style={{ height: '100vh' }}>
@@ -56,10 +56,36 @@ const CinemaCarousel: React.FC<CinemaCarouselProps> = ({ movies }) => {
                 }}
               />
             </div>
-            <Carousel.Caption>
-              <h3>{movie.title}</h3>
-              <p>{movie.description}</p>
-            </Carousel.Caption>
+            <div
+              className="absolute left-0 right-0 p-3"
+              style={{
+                bottom: '15%',
+                background: 'rgba(0, 0, 0, 0.4)',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                maxWidth: '80%',
+                margin: '0 auto',
+                borderRadius: '10px',
+              }}
+            >
+              <div className="mr-3">
+                <img
+                  src={movie.image || "https://via.placeholder.com/150x200"}
+                  alt={movie.title}
+                  style={{
+                    width: '70px',
+                    height: '100px',
+                    objectFit: 'cover',
+                    borderRadius: '5px',
+                  }}
+                />
+              </div>
+              <div>
+                <h5>{movie.title}</h5>
+                <p style={{ fontSize: '0.9rem', marginBottom: '5px' }}>{movie.description}</p>
+              </div>
+            </div>
           </Carousel.Item>
         ))}
       </Carousel>
