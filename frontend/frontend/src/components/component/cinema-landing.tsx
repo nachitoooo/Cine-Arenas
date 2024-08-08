@@ -21,6 +21,7 @@ interface Movie {
   release_date: string;
   image: string | null;
   hall_name: string;
+  cinema_listing: string | null;
   format: string;
   showtimes: Showtime[];
 }
@@ -112,7 +113,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
             <div key={movie.id} >
               <MovieCard
                 id={movie.id}
-                image={movie.image}
+                image={movie.cinema_listing}
                 title={movie.title}
                 description={movie.description}
                 hallName={movie.hall_name}

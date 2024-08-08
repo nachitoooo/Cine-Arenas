@@ -95,6 +95,7 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
     showtimes.forEach((time, index) => {
         const date = new Date(time);
         formData.append(`showtime_${index + 1}`, date.toISOString());
+        
     });
 
     const token = localStorage.getItem('authToken');
