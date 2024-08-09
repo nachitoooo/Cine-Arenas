@@ -9,6 +9,8 @@ interface Movie {
   description: string;
   release_date: string;
   image: string | null;
+  cinema_listing: string | null;
+
 }
 
 interface CinemaCarouselProps {
@@ -45,9 +47,9 @@ const CinemaCarousel: React.FC<CinemaCarouselProps> = ({ movies }) => {
             </div>
             <div className="absolute left-0 bottom-[10%] bg-black text-white max-w-2xl p-6 rounded-r-lg flex">
               <img
-                src={movie.image || "https://via.placeholder.com/150x200"}
+                src={movie.cinema_listing || "https://via.placeholder.com/150x200"}
                 alt={movie.title}
-                className="w-20 h-32 object-cover rounded-md mr-4"
+                className="w-32 h-46 object-cover rounded-md mr-4"
               />
               <div>
                 <h3 className="text-3xl font-bold mb-4">{movie.title}</h3>
