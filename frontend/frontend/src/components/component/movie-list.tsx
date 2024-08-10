@@ -16,6 +16,8 @@ interface Movie {
   hall_name: string;
   format: string;
   showtimes: string[];
+  duration: string;
+  movie_language: string;
 }
 
 interface MovieListProps {
@@ -101,14 +103,16 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
       if (updatedMovie.image instanceof File) {
         formData.append('image', updatedMovie.image);
       }
-
+      formData.append('duration', updatedMovie.duration);  // Añadir este campo
+      formData.append('movie_language', updatedMovie.movie_language);  // Añadir este campo
+  
       const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Token ${token}`
         },
       });
-
+  
       setMovies(movies.map(movie => (movie.id === updatedMovie.id ? response.data : movie)));
       setEditingMovie(null);
       setIsEditing(false);

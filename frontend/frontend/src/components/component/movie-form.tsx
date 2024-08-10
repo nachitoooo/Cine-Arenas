@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +24,8 @@ interface Movie {
   hall_name: string;
   format: string;
   showtimes: string[];
+  duration: string;
+  movie_language: string;
 }
 
 const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) => {
@@ -36,6 +37,8 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
   const [hallName, setHallName] = useState<string>(initialData?.hall_name || '');
   const [format, setFormat] = useState<string>(initialData?.format || '2D');
   const [showtimes, setShowtimes] = useState<string[]>(initialData?.showtimes || ['']);
+  const [duration, setDuration] = useState<string>(initialData?.duration || '');
+  const [movieLanguage, setMovieLanguage] = useState<string>(initialData?.movie_language || '');
   const router = useRouter();
 
   useEffect(() => {
@@ -46,7 +49,10 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
           'Authorization': `Token ${token}`
         }
       }).then((response) => {
-        const { title, release_date, description, image, cinema_listing, hall_name, format, showtimes } = response.data;
+        const {
+          title, release_date, description, image, cinema_listing,
+          hall_name, format, showtimes, duration, movie_language
+        } = response.data;
         setTitle(title);
         setReleaseDate(release_date);
         setDescription(description);
@@ -55,6 +61,8 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
         setHallName(hall_name);
         setFormat(format);
         setShowtimes(showtimes || ['']);
+        setDuration(duration);
+        setMovieLanguage(movie_language);
       }).catch((error) => {
         console.error('Error fetching movie:', error);
       });
@@ -90,12 +98,18 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
     }
     formData.append('hall_name', hallName);
     formData.append('format', format);
+    formData.append('duration', duration);
+    formData.append('movie_language', movieLanguage);
+
+    // Debug: Log formData to check if movie_language is included
+    for (let [key, value] of formData.entries()) { 
+        console.log(key, value);
+    }
 
     // Add each showtime as a separate field
     showtimes.forEach((time, index) => {
         const date = new Date(time);
         formData.append(`showtime_${index + 1}`, date.toISOString());
-        
     });
 
     const token = localStorage.getItem('authToken');
@@ -200,6 +214,26 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
                 <option value="2D">2D</option>
                 <option value="3D">3D</option>
               </select>
+            </div>
+            <div className="form-group">
+              <Label htmlFor="duration" className="form-label">Duración</Label>
+              <Input 
+                id="duration" 
+                value={duration} 
+                onChange={(e) => setDuration(e.target.value)} 
+                className="form-input" 
+                placeholder="Ingresa la duración de la película (e.g., 1:30 HS)"
+              />
+            </div>
+            <div className="form-group">
+              <Label htmlFor="movieLanguage" className="form-label">Idioma</Label>
+              <Input 
+                id="movieLanguage" 
+                value={movieLanguage} 
+                onChange={(e) => setMovieLanguage(e.target.value)} 
+                className="form-input" 
+                placeholder="Ingresa el idioma de la película"
+              />
             </div>
             <div className="form-group">
               <Label htmlFor="showtimes" className="form-label">Horarios</Label>

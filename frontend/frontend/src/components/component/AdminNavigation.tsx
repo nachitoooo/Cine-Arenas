@@ -2,7 +2,7 @@ import Link from "next/link";
 import 'tailwindcss/tailwind.css';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaPowerOff, FaHome, FaFilm, FaEdit } from "react-icons/fa"; // Importamos los iconos necesarios
+import { FaPowerOff, FaHome, FaFilm, FaEdit } from "react-icons/fa"; 
 
 const AdminNavigation = () => {
   const router = useRouter();
@@ -25,7 +25,6 @@ const AdminNavigation = () => {
 
     getCsrfToken();
 
-    // Only access localStorage on the client side
     setAuthToken(localStorage.getItem('authToken'));
   }, []);
 

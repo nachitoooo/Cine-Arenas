@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 
 from django.db import models
 
+from django.db import models
+from django.contrib.auth.models import User
+
 class Movie(models.Model):
     FORMAT_CHOICES = [
         ('2D', '2D'),
@@ -14,11 +17,15 @@ class Movie(models.Model):
     release_date = models.DateField()
     image = models.ImageField(upload_to='movies/', null=True, blank=True)
     cinema_listing = models.ImageField(upload_to='movies/cinema_listing/', null=True, blank=False)
-    hall_name = models.CharField(max_length=100, default=None)  # Nombre de la sala
-    format = models.CharField(max_length=2, choices=FORMAT_CHOICES, default=None)  # Formato de la película (2D/3D)
+    hall_name = models.CharField(max_length=100, default=None)  # nombre de la sala
+    format = models.CharField(max_length=2, choices=FORMAT_CHOICES, default=None)  
+    duration = models.CharField(max_length=250, default="N/A", blank=False)
+    movie_language = models.CharField(max_length=50, default="Espanol")  
+
     
     def __str__(self):
         return self.title
+
 
 
 class Showtime(models.Model):
