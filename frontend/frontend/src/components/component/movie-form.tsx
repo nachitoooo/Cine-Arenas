@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import '../../app/movie-form.css';
+import Swal from 'sweetalert2';
 
 interface MovieFormProps {
   movieId?: string;
@@ -86,27 +87,38 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validar que los horarios estén completos
+    if (showtimes.some(showtime => !showtime)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Advertencia',
+            text: 'Todos los campos deben estar completos antes de guardar.'
+        });
+        return;
+    }
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('release_date', releaseDate);
     formData.append('description', description);
+
+    // Solo agrega la imagen si ha sido seleccionada
     if (image) {
         formData.append('image', image);
     }
+
+    // Solo agrega la cartelera de cine si ha sido seleccionada
     if (cinemaListing) {
         formData.append('cinema_listing', cinemaListing);
     }
+
     formData.append('hall_name', hallName);
     formData.append('format', format);
     formData.append('duration', duration);
     formData.append('movie_language', movieLanguage);
 
-    // Debug: Log formData to check if movie_language is included
-    for (let [key, value] of formData.entries()) { 
-        console.log(key, value);
-    }
-
-    // Add each showtime as a separate field
+    // Añadir los horarios como campos separados
     showtimes.forEach((time, index) => {
         const date = new Date(time);
         formData.append(`showtime_${index + 1}`, date.toISOString());
@@ -133,9 +145,18 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
             onSave(response.data);
         }
 
+        if (onCancel) {
+          onCancel(); 
+      }
+
         router.push('/edit-movie');
     } catch (error) {
         console.error('Error saving movie:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al guardar la película. Por favor, verifica los datos e intenta nuevamente.'
+        });
     }
 };
 

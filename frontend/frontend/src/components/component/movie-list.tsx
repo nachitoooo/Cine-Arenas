@@ -103,16 +103,22 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
       if (updatedMovie.image instanceof File) {
         formData.append('image', updatedMovie.image);
       }
-      formData.append('duration', updatedMovie.duration);  // Añadir este campo
-      formData.append('movie_language', updatedMovie.movie_language);  // Añadir este campo
-  
+      formData.append('duration', updatedMovie.duration);  
+      formData.append('movie_language', updatedMovie.movie_language);
+
+      if (updatedMovie.showtimes && updatedMovie.showtimes.length > 0) {
+        updatedMovie.showtimes.forEach((showtime, index) => {
+          formData.append(`showtime_${index + 1}`, showtime);
+        });
+      }
+
       const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Token ${token}`
         },
       });
-  
+
       setMovies(movies.map(movie => (movie.id === updatedMovie.id ? response.data : movie)));
       setEditingMovie(null);
       setIsEditing(false);
