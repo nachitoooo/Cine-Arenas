@@ -127,6 +127,10 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
     }
   };
 
+  const handleAddMovie = (newMovie: Movie) => {
+    setMovies([...movies, newMovie]);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <AdminNavigation />
@@ -161,6 +165,7 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
               initialData={editingMovie}
               onCancel={handleCancelEdit}
               onSave={handleSaveEdit}
+              updateMoviesList={handleSaveEdit}
             />
           </div>
         </div>

@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import '../../app/movie-form.css';
 import Swal from 'sweetalert2';
 
 interface MovieFormProps {
@@ -13,6 +12,7 @@ interface MovieFormProps {
   initialData?: Movie;
   onCancel?: () => void;
   onSave?: (movie: Movie) => void;
+  updateMoviesList?: (movie: Movie) => void;  // Nueva prop para actualizar la lista
 }
 
 interface Movie {
@@ -29,7 +29,7 @@ interface Movie {
   movie_language: string;
 }
 
-const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) => {
+const MovieForm = ({ movieId, initialData, onCancel, onSave, updateMoviesList }: MovieFormProps) => {
   const [title, setTitle] = useState<string>(initialData?.title || '');
   const [releaseDate, setReleaseDate] = useState<string>(initialData?.release_date || '');
   const [description, setDescription] = useState<string>(initialData?.description || '');
@@ -88,7 +88,6 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validar que los horarios estén completos
     if (showtimes.some(showtime => !showtime)) {
         Swal.fire({
             icon: 'warning',
@@ -103,12 +102,10 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
     formData.append('release_date', releaseDate);
     formData.append('description', description);
 
-    // Solo agrega la imagen si ha sido seleccionada
     if (image) {
         formData.append('image', image);
     }
 
-    // Solo agrega la cartelera de cine si ha sido seleccionada
     if (cinemaListing) {
         formData.append('cinema_listing', cinemaListing);
     }
@@ -118,7 +115,6 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
     formData.append('duration', duration);
     formData.append('movie_language', movieLanguage);
 
-    // Añadir los horarios como campos separados
     showtimes.forEach((time, index) => {
         const date = new Date(time);
         formData.append(`showtime_${index + 1}`, date.toISOString());
@@ -145,9 +141,13 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave }: MovieFormProps) =
             onSave(response.data);
         }
 
+        if (updateMoviesList) {
+            updateMoviesList(response.data);  // Actualizar la lista de películas
+        }
+
         if (onCancel) {
           onCancel(); 
-      }
+        }
 
         router.push('/edit-movie');
     } catch (error) {
