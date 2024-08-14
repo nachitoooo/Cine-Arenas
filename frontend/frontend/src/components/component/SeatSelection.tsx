@@ -2,7 +2,7 @@ import { PiArmchairLight } from "react-icons/pi";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-
+import Swal from 'sweetalert2';
 interface Seat {
   id: number;
   row: string;
@@ -11,7 +11,7 @@ interface Seat {
 }
 
 interface Movie {
-  cinema_listing: string | null; // Cambiado de 'image' a 'cinema_listing'
+  cinema_listing: string | null; 
   title: string;
   description: string;
   format: string;
@@ -77,8 +77,14 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       }
 
       if (!email) {
-        alert("Email is required");
-        return;
+        const Swal = require('sweetalert2')
+        Swal.fire({
+          icon: 'error',
+          title: 'Advertencia',
+          text: 'Asegurate de proporcionar un e-mail válido.'
+      });
+      return
+
       }
 
       if (!selectedFormat || !selectedShowtime) {
@@ -166,9 +172,9 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
           </select>
         </div>
         <div className="mb-4">
-          <label className="block text-white">Horarios:</label>
+          <label className="block text-white text-3xl">Horarios disponibles:</label>
           {movie?.showtimes.map((showtime) => (
-            <div key={showtime.id} className="flex items-center mb-2">
+            <div key={showtime.id} className="flex items-center mb-2 mt-3">
               <input
                 type="radio"
                 name="showtime"
