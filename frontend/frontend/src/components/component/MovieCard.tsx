@@ -71,7 +71,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
               onClick={(e) => e.stopPropagation()} // Esto previene que el clic dentro del modal cierre el modal
             >
               <div className="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
-                <h2 className="text-xl font-semibold">{title}</h2>
+                <h2 className="text-3xl font-semibold">{title}</h2>
                 <button onClick={closeModal} className="text-2xl" aria-label="Cerrar">
                   <FaTimes />
                 </button>
@@ -79,13 +79,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
               <div>
                 <p className="mb-4">{description}</p>
                 <p className="mb-2">
-                  <strong>Nombre de sala:</strong> {hallName}
+                  <strong className="text-lg">Nombre de sala:</strong> {hallName}
                 </p>
                 <p className="mb-2">
-                  <strong>Formato de la película:</strong> {format}
+                  <strong className="text-lg">Formato de la película:</strong> {format}
                 </p>
                 <div>
-                  <strong>Horarios:</strong>
+                  <strong className="text-lg">Horarios disponibles:</strong>
                   <ul className="list-disc pl-5 space-y-1">
                     {showtimes.map((showtimeObj) => (
                       <li key={showtimeObj.id}>{formatShowtime(showtimeObj.showtime)}</li>
@@ -95,14 +95,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
               </div>
               <div className="flex justify-end mt-4 space-x-2">
                 <Link href={`/select-seats/${id}`} legacyBehavior>
-                  <a className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg transition-transform transform hover:scale-105">
+                  <a className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg transition-transform transform hover:scale-105 text">
                     <PiArmchairLight className="mr-2" />
                     Seleccionar asientos
                   </a>
                 </Link>
                 <button
                   onClick={closeModal}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg transition-transform transform hover:scale-105"
+                  className="bg-red-600 text-white text-lg px-4 py-2 rounded-lg transition-transform transform hover:scale-105"
                 >
                   Cerrar
                 </button>

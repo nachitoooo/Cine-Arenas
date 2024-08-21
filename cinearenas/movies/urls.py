@@ -22,4 +22,6 @@ urlpatterns = [
     path('', include(router.urls)),  # Incluir todas las rutas generadas automáticamente por el enrutador
     path('create-payment/', views.create_payment, name='create-payment'),  # Crear pago con la API de MP
     path('payment-success/', views.payment_success, name='payment_success'),  # Mostrar la factura
+    path('sales-stats/', views.SalesStatsView.as_view(), name='sales-stats'),
+
 ]

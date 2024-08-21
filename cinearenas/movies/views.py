@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.authtoken.views import obtain_auth_token
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncDate
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -17,6 +19,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import logout
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 import mercadopago
@@ -380,3 +383,19 @@ def payment_success(request):
     }
 
     return JsonResponse(invoice_data)
+
+class SalesStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Agrupación de ventas por fecha de pago
+        sales_data = Reservation.objects.annotate(date=TruncDate('created_at')).values('date').annotate(total_sales=Sum('amount'), total_tickets=Count('id')).order_by('date')
+        
+        # Convertir los datos en un formato adecuado para la gráfica
+        data = {
+            'labels': [entry['date'] for entry in sales_data],
+            'total_sales': [entry['total_sales'] for entry in sales_data],
+            'total_tickets': [entry['total_tickets'] for entry in sales_data],
+        }
+        
+        return Response(data)
