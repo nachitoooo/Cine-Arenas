@@ -2,6 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from .views import SalesStatsView
 
 # -------- Creación de un enrutador que maneja automáticamente las URL para las vistas de conjunto --------
 #  -------- definir las URL de una API con el enrutador de DRF --------
@@ -22,6 +23,6 @@ urlpatterns = [
     path('', include(router.urls)),  # Incluir todas las rutas generadas automáticamente por el enrutador
     path('create-payment/', views.create_payment, name='create-payment'),  # Crear pago con la API de MP
     path('payment-success/', views.payment_success, name='payment_success'),  # Mostrar la factura
-    path('sales-stats/', views.SalesStatsView.as_view(), name='sales-stats'),
+    path('sales-stats/', SalesStatsView.as_view(), name='sales-stats'),
 
 ]

@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import 'tailwindcss/tailwind.css';
-import { FaPowerOff, FaHome, FaFilm, FaEdit } from "react-icons/fa"; 
 import { createChart, IChartApi } from 'lightweight-charts';
-import { HomeIcon, FilmIcon, PencilIcon, PowerIcon } from 'lucide-react'
+import { HomeIcon, FilmIcon, PencilIcon, PowerIcon } from 'lucide-react';
 
 interface SalesData {
   labels: string[];
@@ -34,10 +33,10 @@ const AdminSideBar: React.FC = () => {
 
     const getSalesData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/sales-stats/', {
+        const response = await fetch('http://localhost:8000/api/sales-stats/', {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${authToken}`,  // Envía el token de autenticación en la cabecera
+            'Authorization': `Token ${authToken}`,
           },
         });
         const data: SalesData = await response.json();
@@ -60,13 +59,13 @@ const AdminSideBar: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
-          'Authorization': `Token ${authToken}`,  // Envía el token de autenticación en la cabecera
+          'Authorization': `Token ${authToken}`,
         },
         credentials: 'include',
       });
 
       if (response.ok) {
-        localStorage.removeItem('authToken'); // Elimina el token del almacenamiento local
+        localStorage.removeItem('authToken');
         router.push('/');
       } else {
         const errorData = await response.json();
@@ -77,24 +76,24 @@ const AdminSideBar: React.FC = () => {
     }
   };
 
-  const navItemClasses = "text-white hover:text-gray-400 flex items-center py-2 px-4 rounded";
+  const navItemClasses = 'text-white hover:text-gray-400 flex items-center py-2 px-4 rounded';
 
   useEffect(() => {
-    if (salesData.labels.length > 0) {
-      const chartContainer = document.getElementById('sales-chart');
-      if (chartContainer) {
-        const chart: IChartApi = createChart(chartContainer, { width: 400, height: 300 });
-        const lineSeries = chart.addLineSeries();
+    if (salesData && salesData.labels && salesData.labels.length > 0) {
+        const chartContainer = document.getElementById('sales-chart');
+        if (chartContainer) {
+            const chart: IChartApi = createChart(chartContainer, { width: 400, height: 300 });
+            const lineSeries = chart.addLineSeries();
 
-        const data = salesData.labels.map((label: string, index: number) => ({
-          time: label,
-          value: salesData.total_sales[index],
-        }));
+            const data = salesData.labels.map((label, index) => ({
+                time: label,
+                value: salesData.total_sales[index],
+            }));
 
-        lineSeries.setData(data);
-      }
+            lineSeries.setData(data);
+        }
     }
-  }, [salesData]);
+}, [salesData]);
 
   return (
     <div className="flex h-screen bg-gray-900 text-gray-100">
@@ -103,19 +102,19 @@ const AdminSideBar: React.FC = () => {
         <h2 className="text-xl font-bold mb-8">Cine Arenas</h2>
         <nav className="space-y-6">
           <Link href="/" className={navItemClasses}>
-            <HomeIcon className="mr-3 h-5 w-5" /> 
+            <HomeIcon className="mr-3 h-5 w-5" />
             <span>Inicio</span>
           </Link>
           <Link href="/create-movie" className={navItemClasses}>
-            <FilmIcon className="mr-3 h-5 w-5" /> 
+            <FilmIcon className="mr-3 h-5 w-5" />
             <span>Crear película</span>
           </Link>
           <Link href="/edit-movie" className={navItemClasses}>
-            <PencilIcon className="mr-3 h-5 w-5" /> 
+            <PencilIcon className="mr-3 h-5 w-5" />
             <span>Gestionar películas</span>
           </Link>
           <button onClick={handleLogout} className={`${navItemClasses} text-red-400 hover:text-red-300`}>
-            <PowerIcon className="mr-3 h-5 w-5" /> 
+            <PowerIcon className="mr-3 h-5 w-5" />
             <span>Cerrar sesión</span>
           </button>
         </nav>
@@ -126,7 +125,13 @@ const AdminSideBar: React.FC = () => {
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div className="bg-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold mb-2">Ventas Diarias</h3>
-            <div className="h-40 bg-gray-700 rounded"></div>  
+            <div>
+        {salesData && salesData.labels.length === 0 ? (
+            <p>No hay datos de ventas disponibles</p>
+        ) : (
+            <div id="sales-chart" className="h-40 bg-gray-700 rounded"></div>
+        )}
+    </div>
           </div>
           <div className="bg-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold mb-2">Películas Populares</h3>
@@ -140,7 +145,7 @@ const AdminSideBar: React.FC = () => {
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
 export default AdminSideBar;

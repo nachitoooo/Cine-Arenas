@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-from django.db import models
-
-from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 class Movie(models.Model):
@@ -53,3 +50,20 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"Reservation for {self.user} at {self.reservation_time}"
+    
+class Payment(models.Model):
+    STATUS_CHOICES = [
+        ('approved', 'Approved'),
+        ('pending', 'Pending'),
+        ('rejected', 'Rejected'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    seats = models.ManyToManyField(Seat)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Payment of {self.amount} for {self.movie.title} ({self.status})"    
