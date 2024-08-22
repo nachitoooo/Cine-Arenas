@@ -29,7 +29,7 @@ from django.utils import timezone
 import pytz
 from django.conf import settings
 from .models import Movie, Seat, Reservation, Showtime, Payment, User
-from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer, ShowtimeSerializer
+from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer, ShowtimeSerializer, PaymentSerializer
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
@@ -124,6 +124,11 @@ class CustomObtainAuthToken(ObtainAuthToken):
             return Response({'token': token.key, 'user_id': user.pk, 'email': user.email})
         except AuthenticationFailed:
             return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+class PaymentListView(generics.ListAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]  # Si deseas que solo los usuarios autenticados puedan ver los pagos        
 
 # ------------------------ Logout -------------------------------
 @api_view(['POST'])
@@ -218,10 +223,10 @@ def create_payment(request):
     showtime = Showtime.objects.get(id=showtime_id)
 
     ticket_price = 100.00
-
     argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
     showtime_local = showtime.showtime.astimezone(argentina_tz)
 
+    # Crear la preferencia de MercadoPago
     preference_data = {
         "items": [
             {
@@ -256,6 +261,19 @@ def create_payment(request):
     print(f"Preference data sent to MercadoPago: {preference_data}")
     print(f"Preference response from MercadoPago: {preference}")
 
+    # Crear un objeto de Payment en la base de datos con la información básica
+    payment = Payment.objects.create(
+        movie=movie,
+        amount=ticket_price * len(seats),
+        status="pending"  # El estado inicial es pendiente hasta que MercadoPago lo confirme
+    )
+
+    for seat in seat_objects:
+        payment.seats.add(seat)
+
+    payment.save()
+
+    # Enviar el correo electrónico
     invoice_data = {
         "movie_title": movie.title,
         "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
@@ -273,7 +291,6 @@ def create_payment(request):
     return Response(preference, status=status.HTTP_201_CREATED)
 
 # ------------------------ Webhook para manejar pagos exitosos -------------------------------
-@csrf_exempt
 @api_view(['POST'])
 def payment_webhook(request):
     try:
@@ -283,7 +300,18 @@ def payment_webhook(request):
             sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
             payment_info = sdk.payment().get(payment_id)
             if payment_info['status'] == 200:
-                handle_successful_payment(payment_info['response']['preference_id'])
+                preference_id = payment_info['response']['preference_id']
+                payment_status = payment_info['response']['status']
+                payment = handle_successful_payment(preference_id)
+                
+                if payment_status == 'approved':
+                    payment.status = 'approved'
+                elif payment_status == 'pending':
+                    payment.status = 'pending'
+                elif payment_status == 'rejected':
+                    payment.status = 'rejected'
+                
+                payment.save()
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -365,7 +393,7 @@ class SalesStatsView(APIView):
 
     def get(self, request):
         sales_data = Payment.objects.filter(status="approved") \
-            .extra({'date': "date(created_at)"}) \
+            .annotate(date=TruncDate('created_at')) \
             .values('date') \
             .annotate(
                 total_sales=Sum('amount'),

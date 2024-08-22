@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Movie, Seat, Reservation, Showtime
+from .models import Movie, Seat, Reservation, Showtime, Payment
 import pytz
 from django.utils import timezone
 import datetime
@@ -78,7 +78,10 @@ class MovieSerializer(serializers.ModelSerializer):
     
      return instance
 
-
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'  # Puedes especificar los campos que deseas incluir, como 'amount', 'status', 'created_at', etc.
 class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat

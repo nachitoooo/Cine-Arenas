@@ -2,25 +2,43 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import 'tailwindcss/tailwind.css';
-import { createChart, IChartApi } from 'lightweight-charts';
+import {
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
 import { HomeIcon, FilmIcon, PencilIcon, PowerIcon } from 'lucide-react';
 
-interface SalesData {
-  labels: string[];
-  total_sales: number[];
-  total_tickets: number[];
+interface Payment {
+  id: number;
+  amount: string;
+  status: string;
+  created_at: string;
+  user: number | null;
+  movie: number;
+  seats: number[];
+}
+
+interface AggregatedSalesData {
+  date: string;
+  total_sales: number;
+  total_tickets: number;
+  approved_payments: number;
+  rejected_payments: number;
 }
 
 const AdminSideBar: React.FC = () => {
   const router = useRouter();
   const [csrfToken, setCsrfToken] = useState<string>('');
   const [authToken, setAuthToken] = useState<string | null>(null);
-  const [salesData, setSalesData] = useState<SalesData>({ labels: [], total_sales: [], total_tickets: [] });
+  const [salesData, setSalesData] = useState<AggregatedSalesData[]>([]);
+
+  useEffect(() => {
+    setAuthToken(localStorage.getItem('authToken'));
+  }, []);
 
   useEffect(() => {
     const getCsrfToken = async () => {
       try {
-        const response = await fetch('http://localhost:8000/csrf/', {
+        const response = await fetch('http://localhost:8000/api/csrf/', {
           method: 'GET',
           credentials: 'include',
         });
@@ -31,26 +49,57 @@ const AdminSideBar: React.FC = () => {
       }
     };
 
-    const getSalesData = async () => {
+    const getPaymentsData = async () => {
+      if (!authToken) return;
+
       try {
-        const response = await fetch('http://localhost:8000/api/sales-stats/', {
+        const response = await fetch('http://localhost:8000/api/payments/', {
           method: 'GET',
           headers: {
             'Authorization': `Token ${authToken}`,
           },
         });
-        const data: SalesData = await response.json();
-        setSalesData(data);
+        const payments: Payment[] = await response.json();
+        const aggregatedData = aggregateSalesData(payments);
+        setSalesData(aggregatedData);
       } catch (error) {
-        console.error('Error fetching sales data:', error);
+        console.error('Error fetching payments data:', error);
       }
     };
 
     getCsrfToken();
-    getSalesData();
-
-    setAuthToken(localStorage.getItem('authToken'));
+    getPaymentsData();
   }, [authToken]);
+
+  const aggregateSalesData = (payments: Payment[]): AggregatedSalesData[] => {
+    const salesMap: { [date: string]: AggregatedSalesData } = {};
+    let cumulativeSales = 0;
+
+    payments.forEach(payment => {
+      const date = new Date(payment.created_at).toISOString().split('T')[0];
+
+      if (!salesMap[date]) {
+        salesMap[date] = {
+          date,
+          total_sales: 0,
+          total_tickets: 0,
+          approved_payments: 0,
+          rejected_payments: 0,
+        };
+      }
+
+      if (payment.status === 'approved' || payment.status === 'success') {
+        cumulativeSales += parseFloat(payment.amount);
+        salesMap[date].total_sales = cumulativeSales;
+        salesMap[date].total_tickets += payment.seats.length;
+        salesMap[date].approved_payments += 1;
+      } else if (payment.status === 'rejected') {
+        salesMap[date].rejected_payments += 1;
+      }
+    });
+
+    return Object.values(salesMap).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  };
 
   const handleLogout = async () => {
     try {
@@ -78,26 +127,8 @@ const AdminSideBar: React.FC = () => {
 
   const navItemClasses = 'text-white hover:text-gray-400 flex items-center py-2 px-4 rounded';
 
-  useEffect(() => {
-    if (salesData && salesData.labels && salesData.labels.length > 0) {
-        const chartContainer = document.getElementById('sales-chart');
-        if (chartContainer) {
-            const chart: IChartApi = createChart(chartContainer, { width: 400, height: 300 });
-            const lineSeries = chart.addLineSeries();
-
-            const data = salesData.labels.map((label, index) => ({
-                time: label,
-                value: salesData.total_sales[index],
-            }));
-
-            lineSeries.setData(data);
-        }
-    }
-}, [salesData]);
-
   return (
     <div className="flex h-screen bg-gray-900 text-gray-100">
-      {/* Sidebar */}
       <aside className="w-64 p-6 border-r border-gray-800">
         <h2 className="text-xl font-bold mb-8">Cine Arenas</h2>
         <nav className="space-y-6">
@@ -120,28 +151,105 @@ const AdminSideBar: React.FC = () => {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-grow p-8">
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div className="bg-gray-800 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Ventas Diarias</h3>
+            <h3 className="text-lg font-semibold mb-2">Ventas Totales</h3>
             <div>
-        {salesData && salesData.labels.length === 0 ? (
-            <p>No hay datos de ventas disponibles</p>
-        ) : (
-            <div id="sales-chart" className="h-40 bg-gray-700 rounded"></div>
-        )}
-    </div>
+              {salesData.length === 0 ? (
+                <p>No hay datos de ventas disponibles</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={salesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#b15eff" />
+                    <XAxis dataKey="date" stroke="#b15eff" />
+                    <YAxis stroke="#b15eff" />
+                    <Tooltip />
+                    <Line 
+                      type="basis" 
+                      dataKey="total_sales" 
+                      stroke="#b15eff" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      style={{ filter: 'drop-shadow(0 0 5px #b15eff)' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
           <div className="bg-gray-800 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Películas Populares</h3>
-            <div className="h-40 bg-gray-700 rounded"></div>
+            <h3 className="text-lg font-semibold mb-2">Boletos Vendidos por Día</h3>
+            <div>
+              {salesData.length === 0 ? (
+                <p>No hay datos disponibles</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={salesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#b15eff" />
+                    <XAxis dataKey="date" stroke="#b15eff" />
+                    <YAxis stroke="#b15eff" />
+                    <Tooltip />
+                    <Bar dataKey="total_tickets" fill="#b15eff" style={{ filter: 'drop-shadow(0 0 5px #b15eff)' }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="bg-gray-800 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Resumen Mensual</h3>
-          <div className="h-64 bg-gray-700 rounded"></div>
+        <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">Pagos Aprobados</h3>
+            <div>
+              {salesData.length === 0 ? (
+                <p>No hay datos disponibles</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={salesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#b15eff" />
+                    <XAxis dataKey="date" stroke="#b15eff" />
+                    <YAxis stroke="#b15eff" />
+                    <Tooltip />
+                    <Line 
+                      type="basis" 
+                      dataKey="approved_payments" 
+                      stroke="#b15eff" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      style={{ filter: 'drop-shadow(0 0 5px #b15eff)' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">Pagos Rechazados</h3>
+            <div>
+              {salesData.length === 0 ? (
+                <p>No hay datos disponibles</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={salesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#b15eff" />
+                    <XAxis dataKey="date" stroke="#b15eff" />
+                    <YAxis stroke="#b15eff" />
+                    <Tooltip />
+                    <Line 
+                      type="basis" 
+                      dataKey="rejected_payments" 
+                      stroke="#b15eff" 
+                      strokeWidth={3} 
+                      dot={false} 
+                      style={{ filter: 'drop-shadow(0 0 5px #b15eff)' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
         </div>
       </main>
     </div>
