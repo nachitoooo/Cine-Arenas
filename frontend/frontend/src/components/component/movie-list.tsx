@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import MovieForm from './movie-form';
 import AdminNavigation from './AdminNavigation';
 import '../../app/globals.css';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 interface Movie {
   id: number;
@@ -134,10 +135,10 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <AdminNavigation />
-      <h1 className="text-4xl font-bold mb-8 text-center text-gray-100">Lista de Películas</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center text-gray-100 mt-8">Lista de Películas</h1>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {movies.map(movie => (
-          <div key={movie.id} className="border border-gray-700 rounded-lg p-4 bg-gray-900 text-gray-100">
+          <div key={movie.id} className="border border-gray-700 rounded-lg p-6 bg-gray-900 text-gray-100">
             {movie.image && (
               <Image
                 src={movie.image}
@@ -151,24 +152,31 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
             <p className="mb-2">{movie.description}</p>
             <p className="mb-4"><strong>Fecha de Estreno:</strong> {movie.release_date}</p>
             <div className="flex space-x-2">
-              <button onClick={() => handleEdit(movie)} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Editar</button>
-              <button onClick={() => handleDelete(movie.id)} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Eliminar</button>
-            </div>
+  <button onClick={() => handleEdit(movie)} className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+    <FaEdit className="mr-2" />
+    Editar película
+  </button>
+  <button onClick={() => handleDelete(movie.id)} className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">
+    <FaTrash className="mr-2" />
+    Eliminar película
+  </button>
+</div>
           </div>
         ))}
       </div>
       {editingMovie && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white p-6 rounded-lg w-full max-w-2xl mx-4 my-8 max-h-[90vh] overflow-y-auto">
-            <MovieForm
-              movieId={editingMovie.id.toString()}
-              initialData={editingMovie}
-              onCancel={handleCancelEdit}
-              onSave={handleSaveEdit}
-              updateMoviesList={handleSaveEdit}
-            />
-          </div>
+        <div className="bg-white p-6 rounded-lg w-full max-w-4xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
+          <MovieForm
+            movieId={editingMovie.id.toString()}
+            initialData={editingMovie}
+            onCancel={handleCancelEdit}
+            onSave={handleSaveEdit}
+            updateMoviesList={handleSaveEdit}
+          />
         </div>
+      </div>
+      
       )}
     </div>
   );

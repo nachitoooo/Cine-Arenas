@@ -3,6 +3,7 @@ import 'tailwindcss/tailwind.css';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaPowerOff, FaHome, FaFilm, FaEdit } from "react-icons/fa"; 
+import { GrUserAdmin } from "react-icons/gr";
 
 const AdminNavigation = () => {
   const router = useRouter();
@@ -67,6 +68,9 @@ const AdminNavigation = () => {
           </Link>
           <Link href="/edit-movie" className={navItemClasses}>
             <FaEdit className="mr-1" /> Gestionar películas
+          </Link>
+          <Link href="/admin" className={navItemClasses}>
+            <GrUserAdmin className="mr-1" /> Acceder al panel de administrador
           </Link>
           <button onClick={handleLogout} className={`${navItemClasses} bg-red-400 hover:bg-red-700 `}>
             <FaPowerOff className="mr-1" /> Cerrar sesión
