@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
-import { HomeIcon, FilmIcon, PencilIcon, PowerIcon } from 'lucide-react'
+import { HomeIcon, FilmIcon, PencilIcon, PowerIcon, MenuIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -32,6 +32,8 @@ export default function AdminSideBar() {
   const [csrfToken, setCsrfToken] = useState<string>('')
   const [authToken, setAuthToken] = useState<string | null>(null)
   const [salesData, setSalesData] = useState<AggregatedSalesData[]>([])
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
 
   useEffect(() => {
     setAuthToken(localStorage.getItem('authToken'))
@@ -161,9 +163,20 @@ export default function AdminSideBar() {
     return null
   }
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   return (
-    <div className="flex h-screen bg-gray-900 text-gray-100">
-      <aside className="w-64 p-6 border-r border-gray-800">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-900 text-gray-100">
+      <Button
+        onClick={toggleSidebar}
+        className="md:hidden fixed top-4 left-4 z-20 bg-gray-800 text-gray-100"
+      >
+        <MenuIcon className="h-6 w-6" />
+      </Button>
+
+      <aside className={`w-64 p-6 border-r border-gray-800 bg-gray-900 fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition duration-200 ease-in-out z-10`}>
         <h1 className="text-xl font-bold mb-8 text-purple-400">Panel de administrador</h1>
         <nav className="space-y-6">
           <Link href="/" className="flex items-center py-2 px-4 rounded hover:bg-gray-800 text-gray-300 hover:text-purple-400 transition-colors">
@@ -186,17 +199,17 @@ export default function AdminSideBar() {
         </nav>
       </aside>
 
-      <main className="flex-grow p-8">
-        <div className="grid grid-cols-2 gap-6 mb-6">
+      <main className="flex-grow p-4 md:p-8 md:ml-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <CardTitle className="text-purple-400">Ventas Totales</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[300px] md:h-[200px]">
               {salesData.length === 0 ? (
                 <p className="text-gray-400">No hay datos de ventas disponibles</p>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={salesData}>
                     <defs>
                       <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -218,11 +231,11 @@ export default function AdminSideBar() {
             <CardHeader>
               <CardTitle className="text-purple-400">Boletos Vendidos por Día</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[300px] md:h-[200px]">
               {salesData.length === 0 ? (
                 <p className="text-gray-400">No hay datos disponibles</p>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={salesData}>
                     <XAxis dataKey="date" tickFormatter={formatDate} interval={Math.ceil(salesData.length / 5)} stroke="#718096" />
                     <YAxis orientation="right" stroke="#718096" />
@@ -236,16 +249,16 @@ export default function AdminSideBar() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <CardTitle className="text-purple-400">Pagos Aprobados</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[300px] md:h-[200px]">
               {salesData.length === 0 ? (
                 <p className="text-gray-400">No hay datos disponibles</p>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={salesData}>
                     <defs>
                       <linearGradient id="colorApproved" x1="0" y1="0" x2="0" y2="1">
@@ -268,11 +281,11 @@ export default function AdminSideBar() {
             <CardHeader>
               <CardTitle className="text-purple-400">Pagos Rechazados</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[300px] md:h-[200px]">
               {salesData.length === 0 ? (
                 <p className="text-gray-400">No hay datos disponibles</p>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={salesData}>
                     <defs>
                       <linearGradient id="colorRejected" x1="0" y1="0" x2="0" y2="1">

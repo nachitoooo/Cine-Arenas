@@ -98,7 +98,7 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
           ></div>
         </div>
 
-        <CinemaNavbar /> {/* Utiliza el nuevo componente de navbar */}
+        <CinemaNavbar /> Utiliza el nuevo componente de navbar
       </header>
 
       <section className="container mx-auto mt-12 lg:px-16 px-4">

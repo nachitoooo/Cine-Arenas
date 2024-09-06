@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import Swal from 'sweetalert2';
+
 interface MovieFormProps {
   movieId?: string;
   initialData?: Movie;
@@ -160,49 +161,49 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave, updateMoviesList }:
 };
 
 return (
-  <div className="container mx-auto px-4 py-8 bg-background text-foreground min-h-screen">
-    <div className="max-w-3xl mx-auto bg-card rounded-lg shadow-lg overflow-hidden border border-border">
-      <div className="p-6 bg-muted">
-        <h3 className="text-2xl font-bold text-black">{movieId ? 'Editar Película' : 'Crear Película'}</h3>
-        <p className="mt-2 text-gray-600">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a la cartelera.</p>
+  <div className="container mx-auto px-4 py-8 bg-gray-50 text-gray-800 min-h-screen">
+    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden border border-gray-300">
+      <div className="p-6 bg-gray-100">
+        <h3 className="text-2xl font-bold text-gray-800">{movieId ? 'Editar Película' : 'Crear Película'}</h3>
+        <p className="mt-2 text-gray-700">Completa el formulario para {movieId ? 'editar' : 'agregar'} una película a la cartelera.</p>
       </div>
       <div className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-sm font-medium text-black">Título</Label>
+              <Label htmlFor="title" className="text-sm font-medium text-gray-800">Título</Label>
               <Input 
                 id="title" 
                 value={title} 
                 onChange={(e) => setTitle(e.target.value)} 
-                className="w-full bg-input text-black" 
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded" 
                 placeholder="Ingresa el título de la película" 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="releaseDate" className="text-sm font-medium text-black">Fecha de Estreno</Label>
+              <Label htmlFor="releaseDate" className="text-sm font-medium text-gray-800">Fecha de Estreno</Label>
               <Input 
                 id="releaseDate" 
                 type="date" 
                 value={releaseDate} 
                 onChange={(e) => setReleaseDate(e.target.value)} 
-                className="w-full bg-input text-black" 
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded" 
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium text-black">Descripción</Label>
+            <Label htmlFor="description" className="text-sm font-medium text-gray-800">Descripción</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full min-h-[120px] bg-input text-black"
+              className="w-full min-h-[120px] bg-gray-100 text-gray-800 border border-gray-300 rounded"
               placeholder="Proporciona una breve descripción de la película"
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="image" className="text-sm font-medium text-black">Imagen</Label>
+              <Label htmlFor="image" className="text-sm font-medium text-gray-800">Imagen</Label>
               <Input 
                 id="image" 
                 type="file" 
@@ -211,11 +212,11 @@ return (
                     setImage(e.target.files[0]);
                   }
                 }} 
-                className="w-full bg-input text-black"
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cinemaListing" className="text-sm font-medium text-black">Cartelera de Cine</Label>
+              <Label htmlFor="cinemaListing" className="text-sm font-medium text-gray-800">Cartelera de Cine</Label>
               <Input 
                 id="cinemaListing" 
                 type="file" 
@@ -224,28 +225,28 @@ return (
                     setCinemaListing(e.target.files[0]);
                   }
                 }} 
-                className="w-full bg-input text-black"
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded"
               />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="hallName" className="text-sm font-medium text-black">Nombre de la Sala</Label>
+              <Label htmlFor="hallName" className="text-sm font-medium text-gray-800">Nombre de la Sala</Label>
               <Input 
                 id="hallName" 
                 value={hallName} 
                 onChange={(e) => setHallName(e.target.value)} 
-                className="w-full bg-input text-black" 
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded" 
                 placeholder="Ingresa el nombre de la sala"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="format" className="text-sm font-medium text-black">Formato</Label>
+              <Label htmlFor="format" className="text-sm font-medium text-gray-800">Formato</Label>
               <select 
                 id="format" 
                 value={format} 
                 onChange={(e) => setFormat(e.target.value)} 
-                className="w-full h-10 px-3 rounded-md border border-input bg-input text-black text-sm"
+                className="w-full h-10 px-3 rounded-md border border-gray-300 bg-gray-100 text-gray-800 text-sm"
               >
                 <option value="2D">2D</option>
                 <option value="3D">3D</option>
@@ -254,53 +255,53 @@ return (
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="duration" className="text-sm font-medium text-black">Duración</Label>
+              <Label htmlFor="duration" className="text-sm font-medium text-gray-800">Duración</Label>
               <Input 
                 id="duration" 
                 value={duration} 
                 onChange={(e) => setDuration(e.target.value)} 
-                className="w-full bg-input text-black" 
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded" 
                 placeholder="Ingresa la duración (e.g., 1:30 HS)"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="movieLanguage" className="text-sm font-medium text-black">Idioma</Label>
+              <Label htmlFor="movieLanguage" className="text-sm font-medium text-gray-800">Idioma</Label>
               <Input 
                 id="movieLanguage" 
                 value={movieLanguage} 
                 onChange={(e) => setMovieLanguage(e.target.value)} 
-                className="w-full bg-input text-black" 
+                className="w-full bg-gray-100 text-gray-800 border border-gray-300 rounded" 
                 placeholder="Ingresa el idioma de la película"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="showtimes" className="text-sm font-medium text-black">Horarios</Label>
+            <Label htmlFor="showtimes" className="text-sm font-medium text-gray-800">Horarios</Label>
             {showtimes.map((showtime, index) => (
               <div key={index} className="flex items-center space-x-2 mt-2">
                 <Input 
                   type="datetime-local" 
                   value={showtime} 
                   onChange={(e) => handleShowtimeChange(index, e.target.value)} 
-                  className="flex-grow bg-input text-black" 
+                  className="flex-grow bg-gray-100 text-gray-800 border border-gray-300 rounded" 
                 />
-                <Button type="button" onClick={() => handleRemoveShowtime(index)} variant="destructive" size="sm" className='text-black border-solid border-2'>
+                <Button type="button" onClick={() => handleRemoveShowtime(index)} variant="destructive" size="sm" className='text-white bg-red-600 border-solid border-2'>
                   Eliminar
                 </Button>
               </div>
             ))}
-            <Button type="button" onClick={handleAddShowtime} variant="outline" size="sm" className="mt-2 text-black">
+            <Button type="button" onClick={handleAddShowtime} variant="outline" size="sm" className="mt-2 text-white bg-gray-800">
               Añadir Horario
             </Button>
           </div>
-          <div className="flex justify-end space-x-4 mt-6 text-black">
+          <div className="flex justify-end space-x-4 mt-6 text-gray-800">
             {onCancel && (
-              <Button type="button" onClick={onCancel} variant="outline">
+              <Button type="button" onClick={onCancel} variant="outline" className="text-gray-800 border-gray-800">
                 Cancelar
               </Button>
             )}
-            <Button type="submit">{movieId ? 'Guardar Cambios' : 'Guardar Película'}
-           
+            <Button type="submit" className="bg-gray-800 text-white hover:bg-gray-900">
+              {movieId ? 'Guardar Cambios' : 'Guardar Película'}
             </Button>
           </div>
         </form>
@@ -309,6 +310,5 @@ return (
   </div>
 );
 };
-
 
 export default MovieForm;
