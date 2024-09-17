@@ -24,7 +24,7 @@ const LoginForm = () => {
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
-        setErrorMessage('');  // Clear previous error messages
+        setErrorMessage('');  
         try {
             const response = await axios.post('http://localhost:8000/api/login/', 
                 { username, password },

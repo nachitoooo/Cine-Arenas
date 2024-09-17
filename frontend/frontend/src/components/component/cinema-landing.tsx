@@ -98,10 +98,10 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
           ></div>
         </div>
 
-        <CinemaNavbar /> Utiliza el nuevo componente de navbar
+        <CinemaNavbar /> 
       </header>
 
-      <section className="container mx-auto mt-12 lg:px-16 px-4">
+      <section className="container mx-auto mt-12 lg:px-16 px-4" id="cartelera-peliculas-disponibles">
         <h2
           className="mt-12 text-5xl font-semibold mb-12 text-center"
           style={{ color: "white" }}
@@ -126,7 +126,9 @@ const CinemaLanding: React.FC<CinemaLandingProps> = ({ movies }) => {
           ))}
         </Slider>
       </section>
+      <section id="contacto">
       <ContactForm />
+      </section>
         </div>
   );
 };
