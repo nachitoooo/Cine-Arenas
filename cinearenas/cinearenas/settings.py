@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-w_y5k5pi=vj+ddfk0tq9=da(xjsnyc#gwgo23ita28wn6=44yr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'cine-arenas-production.up.railway.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'cine-arenas-production.up.railway.app', 'cine-arenas.onrender.com']
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
@@ -117,12 +119,8 @@ WSGI_APPLICATION = 'cinearenas.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 

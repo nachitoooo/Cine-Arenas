@@ -1,1 +1,1 @@
-web: gunicorn cinearenas.wsgi
+web: cd cinearenas && gunicorn cinearenas.wsgi:application --preload --log-file -
