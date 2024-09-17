@@ -42,7 +42,7 @@ export default function AdminSideBar() {
   useEffect(() => {
     const getCsrfToken = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/csrf/', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/csrf/`, {
           method: 'GET',
           credentials: 'include',
         })
@@ -57,7 +57,7 @@ export default function AdminSideBar() {
       if (!authToken) return
 
       try {
-        const response = await fetch('http://localhost:8000/api/payments/', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/`, {
           method: 'GET',
           headers: {
             'Authorization': `Token ${authToken}`,
@@ -119,7 +119,7 @@ export default function AdminSideBar() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/logout/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

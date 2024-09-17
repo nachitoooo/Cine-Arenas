@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/router';
+import axios from 'axios';
 import { FaPowerOff, FaHome, FaFilm, FaEdit, FaBars } from "react-icons/fa";
 import { GrUserAdmin } from "react-icons/gr";
 
@@ -18,12 +19,10 @@ const AdminNavigation: React.FC = () => {
   useEffect(() => {
     const getCsrfToken = async () => {
       try {
-        const response = await fetch('http://localhost:8000/csrf/', {
-          method: 'GET',
-          credentials: 'include',
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/csrf/`, {
+          withCredentials: true,
         });
-        const data = await response.json();
-        setCsrfToken(data.csrfToken);
+        setCsrfToken(response.data.csrfToken);
       } catch (error) {
         console.error('Error fetching CSRF token:', error);
       }
@@ -35,22 +34,24 @@ const AdminNavigation: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/logout/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
-          'Authorization': `Token ${authToken}`,
-        },
-        credentials: 'include',
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/logout/`, 
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Token ${authToken}`,
+          },
+          withCredentials: true,
+        }
+      );
 
-      if (response.ok) {
+      if (response.status === 200) {
         localStorage.removeItem('authToken');
         router.push('/');
       } else {
-        const errorData = await response.json();
-        console.error('Error al cerrar sesión:', errorData);
+        console.error('Error al cerrar sesión:', response.data);
       }
     } catch (error) {
       console.error('Error al cerrar sesión:', error);

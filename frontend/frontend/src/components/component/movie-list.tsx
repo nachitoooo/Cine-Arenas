@@ -36,7 +36,7 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
   const fetchMovies = async () => {
     const token = localStorage.getItem('authToken');
     try {
-      const response = await axios.get('http://localhost:8000/api/movies/', {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/movies/`, {
         headers: {
           'Authorization': `Token ${token}`
         }
@@ -62,7 +62,7 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
     if (result.isConfirmed) {
       const token = localStorage.getItem('authToken');
       try {
-        await axios.delete(`http://localhost:8000/api/movies/${movieId}/`, {
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/movies/${movieId}/`, {
           headers: {
             'Authorization': `Token ${token}`
           }
@@ -113,7 +113,7 @@ const MovieList = ({ setIsEditing }: MovieListProps) => {
         });
       }
 
-      const response = await axios.put(`http://localhost:8000/api/movies/${updatedMovie.id}/`, formData, {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/movies/${updatedMovie.id}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Token ${token}`

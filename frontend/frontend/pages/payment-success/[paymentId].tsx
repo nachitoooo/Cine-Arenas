@@ -27,7 +27,8 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     if (preference_id) {
-      axios.get(`http://localhost:8000/api/payment-success/?preference_id=${preference_id}`)
+      axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/payment-success/?preference_id=${preference_id}`)
         .then(response => {
           setInvoice(response.data);
         })

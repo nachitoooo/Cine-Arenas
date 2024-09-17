@@ -35,7 +35,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
   useEffect(() => {
     const fetchSeats = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/seats/?movie_id=${movieId}`);
         setSeats(response.data);
       } catch (error) {
         console.error("Error fetching seats:", error);
@@ -44,7 +44,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
 
     const fetchMovie = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/movies/${movieId}/`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/movies/${movieId}/`);
         setMovie(response.data);
         setSelectedFormat(response.data.format);
         setSelectedShowtime(response.data.showtimes.length > 0 ? response.data.showtimes[0].id : null);
@@ -91,7 +91,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         return;
       }
 
-      const response = await axios.post("http://localhost:8000/api/reservations/", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/reservations/`, {
         movie: movieId,
         seats: selectedSeats,
       });
@@ -103,7 +103,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
         confirmButtonText: 'Ok'
       });
 
-      const paymentResponse = await axios.post("http://localhost:8000/api/create-payment/", {
+      const paymentResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/create-payment/`, {
         seats: selectedSeats,
         email: email,
         format: selectedFormat,
@@ -113,7 +113,7 @@ const SeatSelection = ({ movieId }: SeatSelectionProps) => {
       setSelectedSeats([]);
       window.location.href = paymentResponse.data.init_point;
 
-      const updatedSeats = await axios.get(`http://localhost:8000/api/seats/?movie_id=${movieId}`);
+      const updatedSeats = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/seats/?movie_id=${movieId}`);
       setSeats(updatedSeats.data);
     } catch (error) {
       console.error("Error reserving seats:", error);

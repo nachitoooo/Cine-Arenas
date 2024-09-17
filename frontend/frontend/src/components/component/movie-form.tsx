@@ -45,7 +45,7 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave, updateMoviesList }:
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (movieId && !initialData) {
-      axios.get(`http://localhost:8000/api/movies/${movieId}/`, {
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/movies/${movieId}/`, {
         headers: {
           'Authorization': `Token ${token}`
         }
@@ -132,9 +132,9 @@ const MovieForm = ({ movieId, initialData, onCancel, onSave, updateMoviesList }:
         };
 
         if (movieId) {
-            response = await axios.put(`http://localhost:8000/api/movies/${movieId}/`, formData, config);
+            response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/movies/${movieId}/`, formData, config);
         } else {
-            response = await axios.post('http://localhost:8000/api/movies/', formData, config);
+            response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/movies/`, formData, config);
         }
 
         if (onSave) {
