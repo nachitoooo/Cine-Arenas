@@ -25,11 +25,12 @@ SECRET_KEY = 'django-insecure-w_y5k5pi=vj+ddfk0tq9=da(xjsnyc#gwgo23ita28wn6=44yr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'cine-arenas-production.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:8000',
+    'cine-arenas-production.up.railway.app'
 ]
     # Application definition
 
@@ -166,7 +167,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MERCADOPAGO_ACCESS_TOKEN = 'TEST-8741947583291739-072122-b02e1fa984fdd25c0b43bdfa04f9d9cf-716882574'
+MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-8741947583291739-072122-dff54ab24f0b9cde309f20120fb3e805-716882574'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

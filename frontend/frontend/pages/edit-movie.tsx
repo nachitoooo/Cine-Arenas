@@ -16,5 +16,5 @@ const EditMovie = () => {
     </ProtectedRoute>
   );
 };
-
+  
 export default EditMovie;

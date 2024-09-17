@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       }
       try {
         // Usamos el endpoint de películas para verificar la autenticación
-        await axios.get('http://localhost:8000/api/movies/', {
+        await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/movies/`, {
           headers: {
             'Authorization': `Token ${token}`
           }

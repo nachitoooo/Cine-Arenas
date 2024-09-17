@@ -28,29 +28,25 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 import pytz
 from django.conf import settings
-from .models import Movie, Seat, Reservation, Showtime
-from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer, ShowtimeSerializer
+from .models import Movie, Seat, Reservation, Showtime, Payment, User
+from .serializers import MovieSerializer, SeatSerializer, ReservationSerializer, ShowtimeSerializer, PaymentSerializer
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 import os
 # ------------------------ ViewSet para manejar las operaciones CRUD en el modelo Movie ------------------------
 class MovieViewSet(viewsets.ModelViewSet):
-    queryset = Movie.objects.all()  # Consulta para obtener todas las películas
-    serializer_class = MovieSerializer  # Serializador para el modelo Movie
-    permission_classes = [IsAuthenticated]  # Requiere autenticación para acceder a estas vistas
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        
-        # Eliminar archivos de imagen asociados
         image_path = instance.image.path if instance.image else None
         cinema_listing_path = instance.cinema_listing.path if instance.cinema_listing else None
 
-        # Eliminar la instancia de la base de datos primero para evitar errores en el frontend
         self.perform_destroy(instance)
 
-        # Ahora intentamos eliminar los archivos
         if image_path and os.path.isfile(image_path):
             os.remove(image_path)
         
@@ -58,22 +54,21 @@ class MovieViewSet(viewsets.ModelViewSet):
             os.remove(cinema_listing_path)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
+# ------------------------ ViewSet para manejar las operaciones CRUD en el modelo Showtime ------------------------
 class ShowtimeViewSet(viewsets.ModelViewSet):
     queryset = Showtime.objects.all()
     serializer_class = ShowtimeSerializer
     permission_classes = [IsAuthenticated]
 
-# ViewSet para manejar las operaciones CRUD en el modelo Seat
+# ------------------------ ViewSet para manejar las operaciones CRUD en el modelo Seat ------------------------
 class SeatViewSet(viewsets.ModelViewSet):
-    queryset = Seat.objects.all()  # Consulta para obtener todos los asientos
-    serializer_class = SeatSerializer  # Serializador para el modelo Seat
-    filter_backends = [filters.SearchFilter]  # Permite buscar a través de filtros
-    search_fields = ['movie__id']  # Campo de búsqueda para filtrar por id de película
-    permission_classes = [AllowAny]  # Permite acceso sin autenticación
+    queryset = Seat.objects.all()
+    serializer_class = SeatSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['movie__id']
+    permission_classes = [AllowAny]
 
-    # Método para filtrar asientos por id de película si se proporciona
     def get_queryset(self):
         movie_id = self.request.query_params.get('movie_id', None)
         if movie_id is not None:
@@ -82,20 +77,18 @@ class SeatViewSet(viewsets.ModelViewSet):
 
 # ------------------------ ViewSet para manejar las operaciones CRUD en el modelo Reservation ------------------------
 class ReservationViewSet(viewsets.ModelViewSet):
-    queryset = Reservation.objects.all()  # Obtener las reservas
-    serializer_class = ReservationSerializer  # Serializador para el modelo Reservation (json)
-    permission_classes = [AllowAny]  #  acceso sin autenticación
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+    permission_classes = [AllowAny]
 
-    # Método para crear una nueva reservación y marcar los asientos como reservados
     def perform_create(self, serializer):
         seats = self.request.data.get('seats')
         if not seats:
-            raise ValidationError('No seats selected')  # Error si no se seleccionan asientos
+            raise ValidationError('No seats selected')
         
         user = self.request.user if self.request.user.is_authenticated else None
         reservation = serializer.save(user=user)
         
-        # Marcar cada asiento seleccionado como reservado
         for seat_id in seats:
             seat = Seat.objects.get(id=seat_id)
             seat.is_reserved = True
@@ -103,17 +96,17 @@ class ReservationViewSet(viewsets.ModelViewSet):
             reservation.seats.add(seat)
         reservation.save()
 
-#  ------------------------ Crear película ------------------------
+# ------------------------ Crear película ------------------------
 class MovieListCreate(generics.ListCreateAPIView):
-    queryset = Movie.objects.all()  # Consulta para obtener todas las películas
-    serializer_class = MovieSerializer  # Convertir a json la clase de models.py
-    permission_classes = [AllowAny]  # acceder sin autenticación requerida
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    permission_classes = [AllowAny]
 
 # ------------------------ Obtener, actualizar, eliminar y editar una película ------------------------
 class MovieDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Movie.objects.all()  # Consulta para obtener todas las películas
-    serializer_class = MovieSerializer  # Serializador para el modelo Movie
-    permission_classes = [AllowAny]  # Permite acceso sin autenticación
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    permission_classes = [AllowAny]
 
 # ----------------------- Petición para devolver el CSRF token en JSON ---------------------
 @ensure_csrf_cookie
@@ -131,7 +124,11 @@ class CustomObtainAuthToken(ObtainAuthToken):
             return Response({'token': token.key, 'user_id': user.pk, 'email': user.email})
         except AuthenticationFailed:
             return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
-
+        
+class PaymentListView(generics.ListAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]  # Si deseas que solo los usuarios autenticados puedan ver los pagos        
 
 # ------------------------ Logout -------------------------------
 @api_view(['POST'])
@@ -139,20 +136,17 @@ class CustomObtainAuthToken(ObtainAuthToken):
 @authentication_classes([TokenAuthentication])
 def user_logout(request):
     try:
-        request.user.auth_token.delete()  # Eliminar el token de autenticación del usuario
+        request.user.auth_token.delete()
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
     except AttributeError:
         return Response({'error': 'El usuario no tiene un token de autenticación'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
+# ------------------------ Envío de correos electrónicos -------------------------------
 def send_invoice_email(email, invoice_data):
     from_email = settings.EMAIL_HOST_USER
     to_email = email
     subject = 'Tu factura de Cine Arenas'
-    # HTML para el cuerpo del correo electrónico
     body = f"""
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: #333; font-family: Arial, sans-serif;">
       <div style="background-color: #ffffff; color: #333; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 800px; width: 100%; text-align: left;">
@@ -197,7 +191,6 @@ def send_invoice_email(email, invoice_data):
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'html'))
 
-
     try:
         server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
         server.starttls()
@@ -210,7 +203,7 @@ def send_invoice_email(email, invoice_data):
         print(f"Failed to send email: {e}")
         return False
 
-# Vista pública para listar todas las películas sin necesidad de autenticación
+# ------------------------ Crear y gestionar pagos -------------------------------
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_payment(request):
@@ -229,13 +222,11 @@ def create_payment(request):
     movie = Movie.objects.get(id=movie_id) if movie_id else None
     showtime = Showtime.objects.get(id=showtime_id)
 
-    # Precio unitario del ticket
     ticket_price = 100.00
-
-    # Parsear y convertir la hora del showtime a la zona horaria de Argentina
     argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
     showtime_local = showtime.showtime.astimezone(argentina_tz)
 
+    # Crear la preferencia de MercadoPago
     preference_data = {
         "items": [
             {
@@ -270,7 +261,19 @@ def create_payment(request):
     print(f"Preference data sent to MercadoPago: {preference_data}")
     print(f"Preference response from MercadoPago: {preference}")
 
-    # Enviar la factura al correo electrónico del usuario
+    # Crear un objeto de Payment en la base de datos con la información básica
+    payment = Payment.objects.create(
+        movie=movie,
+        amount=ticket_price * len(seats),
+        status="pending"  # El estado inicial es pendiente hasta que MercadoPago lo confirme
+    )
+
+    for seat in seat_objects:
+        payment.seats.add(seat)
+
+    payment.save()
+
+    # Enviar el correo electrónico
     invoice_data = {
         "movie_title": movie.title,
         "seats": [{"row": seat.row, "number": seat.number} for seat in seat_objects],
@@ -287,64 +290,66 @@ def create_payment(request):
 
     return Response(preference, status=status.HTTP_201_CREATED)
 
-@csrf_exempt
-@require_GET
-def payment_success(request):
-    preference_id = request.GET.get('preference_id')
+# ------------------------ Webhook para manejar pagos exitosos -------------------------------
+@api_view(['POST'])
+def payment_webhook(request):
+    try:
+        payment_data = request.data
+        if payment_data['type'] == 'payment':
+            payment_id = payment_data['data']['id']
+            sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+            payment_info = sdk.payment().get(payment_id)
+            if payment_info['status'] == 200:
+                preference_id = payment_info['response']['preference_id']
+                payment_status = payment_info['response']['status']
+                payment = handle_successful_payment(preference_id)
+                
+                if payment_status == 'approved':
+                    payment.status = 'approved'
+                elif payment_status == 'pending':
+                    payment.status = 'pending'
+                elif payment_status == 'rejected':
+                    payment.status = 'rejected'
+                
+                payment.save()
+        return JsonResponse({"status": "ok"}, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
-    if not preference_id:
-        print("No preference ID found in request")
-        return JsonResponse({"error": "Preference ID is required"}, status=400)
-
+# ------------------------ Manejo de pagos exitosos -------------------------------
+def handle_successful_payment(preference_id):
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     preference_response = sdk.preference().get(preference_id)
     preference = preference_response.get("response")
 
     if not preference:
-        print(f"No preference found for ID: {preference_id}")
-        return JsonResponse({"error": "No preference found"}, status=404)
+        raise Exception("No se encontró la preferencia en MercadoPago")
 
-    print(f"Preference found: {preference}")
+    movie_title = preference["metadata"]["movie_title"]
+    seats = preference["metadata"]["seats"]
+    total_amount = preference["metadata"]["total_amount"]
+    ticket_price = preference["metadata"]["ticket_price"]
+    user_email = preference["payer"]["email"]
 
-    movie_title = preference.get("metadata", {}).get("movie_title")
-    seats = preference.get("metadata", {}).get("seats", [])
-    total_amount = preference.get("metadata", {}).get("total_amount")
-    ticket_price = preference.get("metadata", {}).get("ticket_price")
-    hall_name = preference.get("metadata", {}).get("hall_name")
-    format = preference.get("metadata", {}).get("format")
-    showtime = preference.get("metadata", {}).get("showtime")
-    email = preference.get("payer", {}).get("email")
+    movie = Movie.objects.get(title=movie_title)
+    user = User.objects.get(email=user_email)
 
-    if not all([movie_title, seats, total_amount, ticket_price, hall_name, format, showtime, email]):
-        print("Missing data in MercadoPago preference metadata")
-        return JsonResponse({"error": "Missing data in preference metadata"}, status=500)
+    payment = Payment.objects.create(
+        user=user,
+        movie=movie,
+        amount=total_amount,
+        status="approved"
+    )
 
-    # Convertir el showtime a un objeto datetime
-    showtime_datetime = datetime.strptime(showtime, '%Y-%m-%dT%H:%M:%S')
+    for seat in seats:
+        seat_obj = Seat.objects.get(row=seat["row"], number=seat["number"], movie=movie)
+        payment.seats.add(seat_obj)
 
-    # Convertir el showtime a la zona horaria de Argentina
-    argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
-    showtime_local = showtime_datetime.astimezone(argentina_tz)
+    payment.save()
 
-    invoice_data = {
-        "movie_title": movie_title,
-        "seats": seats,
-        "total_amount": total_amount,
-        "ticket_price": ticket_price,
-        "hall_name": hall_name,
-        "format": format,
-        "showtime": showtime_local.strftime('%Y-%m-%d %H:%M:%S')
-    }
+    return payment
 
-    print(f"Invoice data: {invoice_data}")
-    print(f"Sending email to: {email}")
-
-    if send_invoice_email(email, invoice_data):
-        print("Email sent successfully")
-    else:
-        print("Failed to send email")
-
-    return JsonResponse(invoice_data)
+# ------------------------ Endpoint para el éxito de pagos -------------------------------
 @csrf_exempt
 @require_GET
 def payment_success(request):
@@ -360,15 +365,13 @@ def payment_success(request):
     movie_title = preference["metadata"]["movie_title"]
     seats = preference["metadata"]["seats"]
     total_amount = preference["metadata"]["total_amount"]
-    ticket_price = preference["metadata"]["ticket_price"]  # Asegurarse de que esto esté presente
+    ticket_price = preference["metadata"]["ticket_price"]
     hall_name = preference["metadata"]["hall_name"]
     format = preference["metadata"]["format"]
     showtime = preference["metadata"]["showtime"]
 
-    # Convertir el showtime a un objeto datetime
     showtime_datetime = datetime.strptime(showtime, '%Y-%m-%dT%H:%M:%S')
 
-    # Convertir el showtime a la zona horaria de Argentina
     argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
     showtime_local = showtime_datetime.astimezone(argentina_tz)
 
@@ -376,7 +379,7 @@ def payment_success(request):
         "movie_title": movie_title,
         "seats": seats,
         "total_amount": total_amount,
-        "ticket_price": ticket_price,  # Asegurarse de que esto esté presente
+        "ticket_price": ticket_price,
         "hall_name": hall_name,
         "format": format,
         "showtime": showtime_local.strftime('%Y-%m-%d %H:%M:%S')
@@ -384,18 +387,26 @@ def payment_success(request):
 
     return JsonResponse(invoice_data)
 
+# ------------------------ Estadísticas de ventas -------------------------------
 class SalesStatsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
-        # Agrupación de ventas por fecha de pago
-        sales_data = Reservation.objects.annotate(date=TruncDate('created_at')).values('date').annotate(total_sales=Sum('amount'), total_tickets=Count('id')).order_by('date')
-        
-        # Convertir los datos en un formato adecuado para la gráfica
-        data = {
-            'labels': [entry['date'] for entry in sales_data],
-            'total_sales': [entry['total_sales'] for entry in sales_data],
-            'total_tickets': [entry['total_tickets'] for entry in sales_data],
-        }
-        
-        return Response(data)
+        sales_data = Payment.objects.filter(status="approved") \
+            .annotate(date=TruncDate('created_at')) \
+            .values('date') \
+            .annotate(
+                total_sales=Sum('amount'),
+                total_tickets=Count('seats')
+            ) \
+            .order_by('date')
+
+        labels = [data['date'].strftime('%Y-%m-%d') for data in sales_data]
+        total_sales = [data['total_sales'] for data in sales_data]
+        total_tickets = [data['total_tickets'] for data in sales_data]
+
+        return Response({
+            "labels": labels,
+            "total_sales": total_sales,
+            "total_tickets": total_tickets
+        })

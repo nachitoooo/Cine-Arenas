@@ -13,7 +13,7 @@ const LoginForm = () => {
     useEffect(() => {
         const getCsrfToken = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/csrf/');
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/csrf/`); // Usar variable de entorno
                 setCsrfToken(response.data.csrfToken);
             } catch (error) {
                 console.error('Error fetching CSRF token:', error);
@@ -24,9 +24,9 @@ const LoginForm = () => {
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
-        setErrorMessage('');  // Clear previous error messages
+        setErrorMessage('');  
         try {
-            const response = await axios.post('http://localhost:8000/api/login/', 
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login/`, // Usar variable de entorno
                 { username, password },
                 { 
                     headers: { 

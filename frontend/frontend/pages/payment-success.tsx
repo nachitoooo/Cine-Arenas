@@ -1,3 +1,4 @@
+// PaymentSuccess.tsx
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -5,14 +6,13 @@ import axios from 'axios';
 interface Seat {
     row: string;
     number: number;
-  }
-  
-  interface Invoice {
+}
+
+interface Invoice {
     movie_title: string;
     seats: Seat[];
     total_amount: number;
-  }
-  
+}
 
 const PaymentSuccess = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     if (preference_id) {
-      axios.get(`http://localhost:8000/api/payment-success/?preference_id=${preference_id}`)
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/payment-success/?preference_id=${preference_id}`)
         .then(response => {
           setInvoice(response.data);
         })

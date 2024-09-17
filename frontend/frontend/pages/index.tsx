@@ -32,11 +32,11 @@ const Home = ({ movies }: HomeProps) => {
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/movies/');
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/movies/`);
     // Mapear los datos recibidos para formatear cada película
     const movies: Movie[] = response.data.map((movie: any) => ({
       ...movie,
-      image: movie.image?.startsWith('http') ? movie.image : `http://localhost:8000${movie.image}`,
+      image: movie.image?.startsWith('http') ? movie.image : `${process.env.NEXT_PUBLIC_API_URL}${movie.image}`, // Ajustar la URL de la imagen
       showtimes: movie.showtimes.map((showtime: any) => ({
         id: showtime.id,
         showtime: showtime.showtime,
